@@ -100,11 +100,13 @@ export default function NossosMomentos() {
                     {/* Overlay hover com informações */}
                     <div className="gallery-hover-overlay">
                       <div className="hover-content">
-                        <span className="hover-location">
-                          <MapPin size={12} style={{ marginRight: '4px' }} /> {moment.location}
-                        </span>
-                        <h3>{moment.title}</h3>
-                        <p>{moment.date}</p>
+                        {moment.location && (
+                          <span className="hover-location">
+                            <MapPin size={12} style={{ marginRight: '4px' }} /> {moment.location}
+                          </span>
+                        )}
+                        {moment.title && <h3>{moment.title}</h3>}
+                        {moment.date && <p>{moment.date}</p>}
                       </div>
                     </div>
                   </div>
@@ -155,16 +157,25 @@ export default function NossosMomentos() {
               <div className="lightbox-sidebar">
                 <div className="sidebar-meta-row">
                   <span className="sidebar-category-tag">{activeMedia.category}</span>
-                  <span className="sidebar-date"><Calendar size={14} style={{ marginRight: '6px' }} /> {activeMedia.date}</span>
+                  {activeMedia.date && (
+                    <span className="sidebar-date">
+                      <Calendar size={14} style={{ marginRight: '6px' }} /> {activeMedia.date}
+                    </span>
+                  )}
                 </div>
-                <h2>{activeMedia.title}</h2>
-                <p className="sidebar-location-text">
-                  <MapPin size={16} style={{ color: 'var(--color-primary-gold-dark)', marginRight: '6px' }} /> {activeMedia.location}
-                </p>
+                {activeMedia.title && <h2>{activeMedia.title}</h2>}
+                {activeMedia.location && (
+                  <p className="sidebar-location-text">
+                    <MapPin size={16} style={{ color: 'var(--color-primary-gold-dark)', marginRight: '6px' }} /> {activeMedia.location}
+                  </p>
+                )}
                 
-                <div className="divider-gold-fine"></div>
-
-                <p className="sidebar-description">{activeMedia.description}</p>
+                {activeMedia.description && (
+                  <>
+                    <div className="divider-gold-fine"></div>
+                    <p className="sidebar-description">{activeMedia.description}</p>
+                  </>
+                )}
 
                 <div className="sidebar-cta-box">
                   <h4>Ficou com vontade de conhecer?</h4>

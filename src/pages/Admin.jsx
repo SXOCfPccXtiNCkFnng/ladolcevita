@@ -1465,15 +1465,19 @@ export default function Admin() {
 
                           {/* Info */}
                           <div className="dest-card-body">
-                            <div className="dest-card-country">
-                              <MapPin size={11} />
-                              <span>{moment.location}</span>
-                            </div>
-                            <h4 className="dest-card-title">{moment.title}</h4>
+                            {moment.location && (
+                              <div className="dest-card-country">
+                                <MapPin size={11} />
+                                <span>{moment.location}</span>
+                              </div>
+                            )}
+                            <h4 className="dest-card-title">{moment.title || 'Sem Título'}</h4>
                             <span style={{ fontSize: '0.72rem', color: 'var(--color-primary-gold-dark)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                               {moment.category}
                             </span>
-                            <p className="dest-card-desc">{(moment.description || '').substring(0, 70)}{moment.description?.length > 70 ? '...' : ''}</p>
+                            {moment.description && (
+                              <p className="dest-card-desc">{(moment.description || '').substring(0, 70)}{moment.description?.length > 70 ? '...' : ''}</p>
+                            )}
                           </div>
 
                           {/* Ações */}
@@ -2048,7 +2052,6 @@ export default function Admin() {
                     value={momentForm.title} 
                     onChange={e => setMomentForm({...momentForm, title: e.target.value})} 
                     placeholder="Ex: Brinde ao pôr do sol na Toscana" 
-                    required 
                   />
                 </div>
 
@@ -2085,7 +2088,6 @@ export default function Admin() {
                       value={momentForm.location} 
                       onChange={e => setMomentForm({...momentForm, location: e.target.value})} 
                       placeholder="Ex: Val d'Orcia, Itália" 
-                      required 
                     />
                   </div>
 
@@ -2096,7 +2098,6 @@ export default function Admin() {
                       value={momentForm.date} 
                       onChange={e => setMomentForm({...momentForm, date: e.target.value})} 
                       placeholder="Ex: Setembro de 2024" 
-                      required 
                     />
                   </div>
                 </div>
@@ -2226,7 +2227,6 @@ export default function Admin() {
                     onChange={e => setMomentForm({...momentForm, description: e.target.value})} 
                     rows="4" 
                     placeholder="Conte a história por trás desse momento..."
-                    required 
                   ></textarea>
                 </div>
               </div>
