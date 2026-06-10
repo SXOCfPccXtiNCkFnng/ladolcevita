@@ -34,16 +34,11 @@ export function useTrips() {
           });
         });
         
-        // Se o banco de dados do Firestore estiver conectado mas vazio, fallback para mockTrips
-        if (list.length === 0) {
-          setTrips(mockTrips);
-        } else {
-          setTrips(list);
-        }
+        setTrips(list);
         setLoading(false);
       }, (error) => {
         console.error("Erro ao carregar viagens do Firestore:", error);
-        setTrips(mockTrips);
+        setTrips([]);
         setLoading(false);
       });
       return () => unsubscribe();

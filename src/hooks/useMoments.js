@@ -1,44 +1,46 @@
 import { useState, useEffect } from 'react';
 import { db, isFirebaseConfigured } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { mockDestinations } from '../data/mockData';
+import { mockMoments } from '../data/mockData';
 
-export function useDestinations() {
-  const [destinations, setDestinations] = useState([]);
+export function useMoments() {
+  const [moments, setMoments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (isFirebaseConfigured && db) {
-      const destinationsRef = collection(db, 'destinations');
-      const unsubscribe = onSnapshot(destinationsRef, (snapshot) => {
+      const momentsRef = collection(db, 'moments');
+      const unsubscribe = onSnapshot(momentsRef, (snapshot) => {
         const list = [];
         snapshot.forEach((doc) => {
           const data = doc.data();
           list.push({ 
             docId: doc.id, 
             id: data.id || doc.id,
+            type: data.type || 'photo',
+            category: data.category || 'Experiências',
             title: data.title || '',
-            country: data.country || '',
+            location: data.location || '',
+            date: data.date || '',
             description: data.description || '',
             image: data.image || '',
-            tags: data.tags || [],
-            highlights: data.highlights || []
+            videoUrl: data.videoUrl || ''
           });
         });
         
-        setDestinations(list);
+        setMoments(list);
         setLoading(false);
       }, (error) => {
-        console.error("Erro ao carregar destinos do Firestore:", error);
-        setDestinations([]);
+        console.error("Erro ao carregar momentos do Firestore:", error);
+        setMoments([]);
         setLoading(false);
       });
       return () => unsubscribe();
     } else {
-      setDestinations(mockDestinations);
+      setMoments(mockMoments);
       setLoading(false);
     }
   }, []);
 
-  return { destinations, loading };
+  return { moments, loading };
 }

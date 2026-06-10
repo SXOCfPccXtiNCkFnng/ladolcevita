@@ -18,29 +18,44 @@ function App() {
 
   // Efeito global para observer de animação de entrada (reveal scroll) nas páginas
   useEffect(() => {
-    // Adiciona uma pequena folga para garantir que o DOM da nova página já esteja montado
-    const timer = setTimeout(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('active');
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      const revealElements = document.querySelectorAll('.reveal');
-      revealElements.forEach((el) => observer.observe(el));
+    // Função para registrar elementos não observados
+    const observeNewElements = () => {
+      const revealElements = document.querySelectorAll('.reveal:not([data-observed])');
+      revealElements.forEach((el) => {
+        el.setAttribute('data-observed', 'true');
+        observer.observe(el);
+      });
+    };
 
-      return () => {
-        revealElements.forEach((el) => observer.unobserve(el));
-      };
-    }, 150);
+    // Registra os elementos atuais
+    observeNewElements();
 
-    return () => clearTimeout(timer);
-  }, [currentTab]);
+    // Cria um MutationObserver para observar novos elementos adicionados dinamicamente
+    const mutationObserver = new MutationObserver(() => {
+      observeNewElements();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, []); // Executa apenas na montagem inicial; o MutationObserver lida com novos elementos em abas/páginas dinâmicas
 
   // Listener para rota secreta de administração via hash (#painel-secreto)
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { X, Play, Camera, Video, MapPin, Calendar, ArrowRight } from 'lucide-react';
-import { mockMoments } from '../data/mockData';
+import { X, Play, Camera, Video, MapPin, Calendar, ArrowRight, RefreshCw } from 'lucide-react';
+import { useMoments } from '../hooks/useMoments';
 import whatsappIcon from '../assets/whatsapp.png';
 import pugliaDestination from '../assets/puglia_destination.png';
 
@@ -11,8 +11,10 @@ export default function NossosMomentos() {
   const [selectedFilter, setSelectedFilter] = useState('Todos'); // 'Todos' | 'Itália' | 'Portugal' | 'Experiências'
   const [activeMedia, setActiveMedia] = useState(null); // Para o lightbox modal
 
+  const { moments, loading: momentsLoading } = useMoments();
+
   // Filtragem dos momentos
-  const filteredMoments = mockMoments.filter(moment => {
+  const filteredMoments = moments.filter(moment => {
     if (selectedFilter === 'Todos') return true;
     return moment.category === selectedFilter;
   });
@@ -57,7 +59,13 @@ export default function NossosMomentos() {
 
       {/* 3. GALERIA DE MÍDIA */}
       <section className="container gallery-section">
-        {filteredMoments.length === 0 ? (
+        {momentsLoading ? (
+          <div className="no-results text-center" style={{ padding: '60px 0' }}>
+            <RefreshCw size={32} style={{ color: 'var(--color-primary-gold)', animation: 'spin-filter 2s linear infinite', marginBottom: '16px' }} />
+            <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>Carregando momentos...</p>
+            <style>{`@keyframes spin-filter { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }`}</style>
+          </div>
+        ) : filteredMoments.length === 0 ? (
           <div className="no-results text-center">
             <h3>Nenhuma lembrança registrada nesta categoria</h3>
             <p>Em breve adicionaremos novos registros exclusivos dos nossos grupos.</p>

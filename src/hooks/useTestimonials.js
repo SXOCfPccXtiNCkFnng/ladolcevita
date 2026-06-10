@@ -25,16 +25,11 @@ export function useTestimonials() {
           });
         });
         
-        // Fallback para mockTestimonials se o banco estiver vazio
-        if (list.length === 0) {
-          setTestimonials(mockTestimonials);
-        } else {
-          setTestimonials(list);
-        }
+        setTestimonials(list);
         setLoading(false);
       }, (error) => {
         console.error("Erro ao carregar depoimentos do Firestore:", error);
-        setTestimonials(mockTestimonials);
+        setTestimonials([]);
         setLoading(false);
       });
       return () => unsubscribe();

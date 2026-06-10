@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Shield, Key, Eye, EyeOff, LayoutDashboard, PlusCircle, Settings, 
-  LogOut, CheckCircle, Database, Mail, Edit2, Trash2, X, AlertCircle, RefreshCw, MessageSquare, Globe, MapPin
+  LogOut, CheckCircle, Database, Mail, Edit2, Trash2, X, AlertCircle, RefreshCw, MessageSquare, Globe, MapPin, Camera, Video
 } from 'lucide-react';
-import { mockTrips, mockTestimonials, mockDestinations } from '../data/mockData';
+import { mockTrips, mockTestimonials, mockDestinations, mockMoments } from '../data/mockData';
 import { db, auth, isFirebaseConfigured } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
@@ -28,13 +28,15 @@ export default function Admin() {
   };
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState('trips'); // 'trips' | 'contacts' | 'testimonials' | 'destinations'
+  const [activeTab, setActiveTab] = useState('trips'); // 'trips' | 'contacts' | 'testimonials' | 'destinations' | 'moments'
   const [trips, setTrips] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [destinations, setDestinations] = useState([]);
+  const [moments, setMoments] = useState([]);
   const [isLoadingTrips, setIsLoadingTrips] = useState(false);
   const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(false);
   const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
+  const [isLoadingMoments, setIsLoadingMoments] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
 
   // Modais e formulários
@@ -65,6 +67,20 @@ export default function Admin() {
     highlightsString: ''
   });
 
+  const [isMomentModalOpen, setIsMomentModalOpen] = useState(false);
+  const [momentModalMode, setMomentModalMode] = useState('add'); // 'add' | 'edit'
+  const [editingMomentId, setEditingMomentId] = useState(null);
+  const [momentForm, setMomentForm] = useState({
+    type: 'photo', // 'photo' | 'video'
+    category: 'Itália', // 'Itália' | 'Portugal' | 'Experiências'
+    title: '',
+    location: '',
+    date: '',
+    description: '',
+    image: '',
+    videoUrl: ''
+  });
+
   // Estado para controle de upload de imagem
   const [imageInputMode, setImageInputMode] = useState('url'); // 'url' | 'upload'
   const [imageUploadPreview, setImageUploadPreview] = useState(null);
@@ -86,6 +102,8 @@ export default function Admin() {
       setImageUploadPreview(base64);
       if (formType === 'destination') {
         setDestinationForm(prev => ({ ...prev, image: base64 }));
+      } else if (formType === 'moment') {
+        setMomentForm(prev => ({ ...prev, image: base64 }));
       } else {
         setTripForm(prev => ({ ...prev, image: base64 }));
       }
@@ -237,6 +255,32 @@ export default function Admin() {
     }
   }, [isLoggedIn]);
 
+  // Carrega os momentos em tempo real
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    if (isFirebaseConfigured && db) {
+      setIsLoadingMoments(true);
+      const ref = collection(db, 'moments');
+      const unsubscribe = onSnapshot(ref, (snapshot) => {
+        const list = [];
+        snapshot.forEach((doc) => {
+          list.push({ docId: doc.id, ...doc.data() });
+        });
+        setMoments(list);
+        setIsLoadingMoments(false);
+      }, (error) => {
+        console.error("Erro no onSnapshot do Firestore (moments):", error);
+        setMoments([]);
+        setIsLoadingMoments(false);
+      });
+      return () => unsubscribe();
+    } else {
+      setMoments(mockMoments);
+    }
+  }, [isLoggedIn]);
+
+
 
 
   // Simulação/Efetuação de Login Administrativo
@@ -273,15 +317,16 @@ export default function Admin() {
     setIsLoggedIn(false);
   };
 
-  // Popular o Banco de Dados com mockTrips e mockTestimonials
+  // Popular o Banco de Dados com mockTrips, mockTestimonials, mockDestinations e mockMoments
   const handleSeedDatabase = async () => {
     if (!isFirebaseConfigured || !db) return;
-    if (window.confirm("Deseja mesmo popular o Firebase Firestore com os pacotes de viagens e depoimentos de demonstração?")) {
+    if (window.confirm("Deseja mesmo popular o Firebase Firestore com todos os dados de demonstração (viagens, depoimentos, destinos e momentos)?")) {
       setIsSeeding(true);
       try {
         const batch = writeBatch(db);
-        const tripsRef = collection(db, 'trips');
         
+        // 1. Viagens
+        const tripsRef = collection(db, 'trips');
         mockTrips.forEach((trip) => {
           const newDocRef = doc(tripsRef);
           batch.set(newDocRef, {
@@ -305,6 +350,7 @@ export default function Admin() {
           });
         });
 
+        // 2. Depoimentos
         const testimonialsRef = collection(db, 'testimonials');
         mockTestimonials.forEach((testimonial) => {
           const newDocRef = doc(testimonialsRef);
@@ -317,9 +363,41 @@ export default function Admin() {
             text: testimonial.text
           });
         });
+
+        // 3. Destinos
+        const destinationsRef = collection(db, 'destinations');
+        mockDestinations.forEach((dest) => {
+          const newDocRef = doc(destinationsRef);
+          batch.set(newDocRef, {
+            id: dest.id,
+            title: dest.title,
+            country: dest.country,
+            description: dest.description,
+            image: dest.image,
+            tags: dest.tags || [],
+            highlights: dest.highlights || []
+          });
+        });
+
+        // 4. Momentos
+        const momentsRef = collection(db, 'moments');
+        mockMoments.forEach((moment) => {
+          const newDocRef = doc(momentsRef);
+          batch.set(newDocRef, {
+            id: moment.id,
+            type: moment.type,
+            category: moment.category,
+            title: moment.title,
+            location: moment.location,
+            date: moment.date,
+            description: moment.description,
+            image: moment.image,
+            videoUrl: moment.videoUrl || ''
+          });
+        });
         
         await batch.commit();
-        showFeedback('success', "Firestore populado com sucesso!");
+        showFeedback('success', "Firestore totalmente populado com sucesso!");
       } catch (err) {
         console.error(err);
         showFeedback('error', "Erro ao popular banco de dados: " + err.message);
@@ -358,6 +436,39 @@ export default function Admin() {
       }
     }
   };
+
+  const handleSeedMoments = async () => {
+    if (!isFirebaseConfigured || !db) return;
+    if (window.confirm("Deseja popular a coleção de Nossos Momentos com as mídias de demonstração?")) {
+      setIsSeeding(true);
+      try {
+        const batch = writeBatch(db);
+        const ref = collection(db, 'moments');
+        mockMoments.forEach((moment) => {
+          const newDocRef = doc(ref);
+          batch.set(newDocRef, {
+            id: moment.id,
+            type: moment.type,
+            category: moment.category,
+            title: moment.title,
+            location: moment.location,
+            date: moment.date,
+            description: moment.description,
+            image: moment.image,
+            videoUrl: moment.videoUrl || ''
+          });
+        });
+        await batch.commit();
+        showFeedback('success', "Momentos de demonstração importados com sucesso!");
+      } catch (err) {
+        console.error(err);
+        showFeedback('error', "Erro ao popular momentos: " + err.message);
+      } finally {
+        setIsSeeding(false);
+      }
+    }
+  };
+
 
 
   // CRUD Handlers
@@ -705,6 +816,115 @@ export default function Admin() {
     }
   };
 
+  // CRUD Handlers for Moments
+  const handleOpenAddMomentModal = () => {
+    setMomentModalMode('add');
+    setEditingMomentId(null);
+    setImageInputMode('url');
+    setImageUploadPreview(null);
+    setMomentForm({
+      type: 'photo',
+      category: 'Itália',
+      title: '',
+      location: '',
+      date: '',
+      description: '',
+      image: '',
+      videoUrl: ''
+    });
+    setIsMomentModalOpen(true);
+  };
+
+  const handleOpenEditMomentModal = (moment) => {
+    setMomentModalMode('edit');
+    setEditingMomentId(moment.docId || moment.id);
+    setMomentForm({
+      type: moment.type || 'photo',
+      category: moment.category || 'Experiências',
+      title: moment.title || '',
+      location: moment.location || '',
+      date: moment.date || '',
+      description: moment.description || '',
+      image: moment.image || '',
+      videoUrl: moment.videoUrl || ''
+    });
+    const imageIsBase64 = moment.image && moment.image.startsWith('data:');
+    setImageInputMode(imageIsBase64 ? 'upload' : 'url');
+    setImageUploadPreview(imageIsBase64 ? moment.image : null);
+    setIsMomentModalOpen(true);
+  };
+
+  const handleDeleteMoment = async (moment) => {
+    const momentId = moment.docId || moment.id;
+    if (window.confirm(`Tem certeza que deseja excluir o momento "${moment.title}" permanentemente?`)) {
+      if (isFirebaseConfigured && db) {
+        try {
+          await deleteDoc(doc(db, 'moments', momentId));
+          showFeedback('success', 'Momento excluído com sucesso!');
+        } catch (err) {
+          console.error("Erro ao excluir momento:", err);
+          showFeedback('error', "Erro ao excluir do Firestore: " + err.message);
+        }
+      } else {
+        showFeedback('success', "Operação em Modo de Demonstração. Removendo localmente.");
+        const idx = mockMoments.findIndex(m => m.id === momentId);
+        if (idx !== -1) {
+          mockMoments.splice(idx, 1);
+          setMoments([...mockMoments]);
+        }
+      }
+    }
+  };
+
+  const handleMomentFormSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      type: momentForm.type,
+      category: momentForm.category,
+      title: momentForm.title,
+      location: momentForm.location,
+      date: momentForm.date,
+      description: momentForm.description,
+      image: momentForm.image,
+      videoUrl: momentForm.type === 'video' ? momentForm.videoUrl : ''
+    };
+
+    if (isFirebaseConfigured && db) {
+      try {
+        if (momentModalMode === 'add') {
+          await addDoc(collection(db, 'moments'), data);
+          showFeedback('success', 'Novo momento cadastrado com sucesso!');
+        } else {
+          await updateDoc(doc(db, 'moments', editingMomentId), data);
+          showFeedback('success', 'Momento atualizado com sucesso!');
+        }
+        setIsMomentModalOpen(false);
+      } catch (err) {
+        console.error("Erro ao salvar momento:", err);
+        showFeedback('error', "Erro ao gravar dados no Firebase: " + err.message);
+      }
+    } else {
+      showFeedback('success', "Demonstração local: os dados foram atualizados temporariamente.");
+      if (momentModalMode === 'add') {
+        const newLocal = {
+          id: 'local-moment-' + Date.now(),
+          ...data
+        };
+        mockMoments.push(newLocal);
+        setMoments([...mockMoments]);
+      } else {
+        const idx = mockMoments.findIndex(m => m.id === editingMomentId);
+        if (idx !== -1) {
+          mockMoments[idx] = {
+            ...mockMoments[idx],
+            ...data
+          };
+          setMoments([...mockMoments]);
+        }
+      }
+      setIsMomentModalOpen(false);
+    }
+  };
 
   const maskApiKey = (key) => {
     if (!key || key === "YOUR_API_KEY_HERE") return "Não configurado";
@@ -807,6 +1027,14 @@ export default function Admin() {
               >
                 <Globe size={18} />
                 <span>Gerenciar Destinos</span>
+              </button>
+
+              <button 
+                className={`sidebar-nav-btn ${activeTab === 'moments' ? 'active' : ''}`}
+                onClick={() => setActiveTab('moments')}
+              >
+                <Camera size={18} />
+                <span>Nossos Momentos</span>
               </button>
             </nav>
 
@@ -1143,6 +1371,106 @@ export default function Admin() {
                               className="row-action-btn delete"
                               style={{ flex: 1, justifyContent: 'center' }}
                               onClick={() => handleDeleteDestination(dest)}
+                            >
+                              <Trash2 size={14} />
+                              <span>Excluir</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : activeTab === 'moments' ? (
+              /* TAB: GERENCIAR MOMENTOS */
+              <div className="panel-tab-content">
+                <div className="panel-header-row">
+                  <div>
+                    <h2>Nossos Momentos</h2>
+                    <p>Adicione fotos e vídeos das viagens passadas e depoimentos visuais dos clientes</p>
+                  </div>
+                  <button className="btn btn-primary btn-with-icon" onClick={handleOpenAddMomentModal}>
+                    <PlusCircle size={16} style={{ marginRight: '8px' }} />
+                    <span>Adicionar Registro</span>
+                  </button>
+                </div>
+
+                {/* Contadores por categoria */}
+                {moments.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid var(--glass-border)' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', marginRight: '4px' }}>Mídias por categoria:</span>
+                    {['Itália', 'Portugal', 'Experiências'].map(cat => (
+                      <span key={cat} style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '600', background: 'var(--color-bg-cream)', color: 'var(--color-dark-green)', border: '1px solid var(--glass-border)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <Globe size={11} />
+                        {cat} <strong style={{ color: 'var(--color-primary-gold-dark)' }}>({moments.filter(m => m.category === cat).length})</strong>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {isLoadingMoments ? (
+                  <div className="panel-loading">
+                    <RefreshCw className="spinner-icon" size={28} />
+                    <p>Carregando galeria...</p>
+                  </div>
+                ) : moments.length === 0 ? (
+                  <div className="no-trips-card text-center">
+                    <Camera size={32} style={{ color: 'var(--color-primary-gold)', marginBottom: '12px' }} />
+                    <h3>Nenhum momento cadastrado</h3>
+                    <p>Clique em "Adicionar Registro" para postar a primeira foto ou vídeo.</p>
+                    {isFirebaseConfigured && (
+                      <button className="btn btn-outline" style={{ marginTop: '16px' }} onClick={handleSeedMoments} disabled={isSeeding}>
+                        {isSeeding ? 'Populando banco...' : 'Popular com dados de demonstração'}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="destinations-admin-grid">
+                    {moments.map(moment => {
+                      return (
+                        <div key={moment.docId || moment.id} className="destination-admin-card glass-card">
+                          {/* Imagem/Thumb */}
+                          <div className="dest-card-image-wrapper">
+                            {moment.image ? (
+                              <img src={moment.image} alt={moment.title} className="dest-card-image" />
+                            ) : (
+                              <div className="dest-card-image-placeholder">
+                                <Camera size={28} />
+                              </div>
+                            )}
+                            <span className="dest-status-badge status-badge-admin status-ativo" style={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>
+                              {moment.type === 'video' ? '📹 Vídeo' : '📷 Foto'}
+                            </span>
+                          </div>
+
+                          {/* Info */}
+                          <div className="dest-card-body">
+                            <div className="dest-card-country">
+                              <MapPin size={11} />
+                              <span>{moment.location}</span>
+                            </div>
+                            <h4 className="dest-card-title">{moment.title}</h4>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--color-primary-gold-dark)', fontWeight: '700', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                              {moment.category}
+                            </span>
+                            <p className="dest-card-desc">{(moment.description || '').substring(0, 70)}{moment.description?.length > 70 ? '...' : ''}</p>
+                          </div>
+
+                          {/* Ações */}
+                          <div className="dest-card-actions">
+                            <button
+                              className="row-action-btn edit"
+                              style={{ flex: 1, justifyContent: 'center' }}
+                              onClick={() => handleOpenEditMomentModal(moment)}
+                            >
+                              <Edit2 size={14} />
+                              <span>Editar</span>
+                            </button>
+                            <button
+                              className="row-action-btn delete"
+                              style={{ flex: 1, justifyContent: 'center' }}
+                              onClick={() => handleDeleteMoment(moment)}
                             >
                               <Trash2 size={14} />
                               <span>Excluir</span>
@@ -1682,6 +2010,216 @@ export default function Admin() {
         </div>
       )}
 
+      {/* 6. MODAL DE ADICIONAR / EDITAR MOMENTO */}
+      {isMomentModalOpen && (
+        <div className="admin-modal-overlay">
+          <div className="admin-modal-card glass-card">
+            <div className="modal-header">
+              <h3>{momentModalMode === 'add' ? 'Adicionar Registro em Momentos' : 'Editar Registro em Momentos'}</h3>
+              <button className="close-modal-btn" onClick={() => setIsMomentModalOpen(false)}><X size={20} /></button>
+            </div>
+
+            <form onSubmit={handleMomentFormSubmit} className="modal-form-grid">
+              {/* Coluna da Esquerda */}
+              <div className="form-col">
+                <div className="form-group-custom">
+                  <label>Título do Momento</label>
+                  <input 
+                    type="text" 
+                    value={momentForm.title} 
+                    onChange={e => setMomentForm({...momentForm, title: e.target.value})} 
+                    placeholder="Ex: Brinde ao pôr do sol na Toscana" 
+                    required 
+                  />
+                </div>
+
+                <div className="form-row-two-col">
+                  <div className="form-group-custom">
+                    <label>Tipo de Mídia</label>
+                    <select 
+                      value={momentForm.type} 
+                      onChange={e => setMomentForm({...momentForm, type: e.target.value})}
+                    >
+                      <option value="photo">Foto</option>
+                      <option value="video">Vídeo</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group-custom">
+                    <label>Categoria</label>
+                    <select 
+                      value={momentForm.category} 
+                      onChange={e => setMomentForm({...momentForm, category: e.target.value})}
+                    >
+                      <option value="Itália">Itália</option>
+                      <option value="Portugal">Portugal</option>
+                      <option value="Experiências">Experiências</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row-two-col">
+                  <div className="form-group-custom">
+                    <label>Localização (Cidade, País)</label>
+                    <input 
+                      type="text" 
+                      value={momentForm.location} 
+                      onChange={e => setMomentForm({...momentForm, location: e.target.value})} 
+                      placeholder="Ex: Val d'Orcia, Itália" 
+                      required 
+                    />
+                  </div>
+
+                  <div className="form-group-custom">
+                    <label>Data / Época</label>
+                    <input 
+                      type="text" 
+                      value={momentForm.date} 
+                      onChange={e => setMomentForm({...momentForm, date: e.target.value})} 
+                      placeholder="Ex: Setembro de 2024" 
+                      required 
+                    />
+                  </div>
+                </div>
+
+                {momentForm.type === 'video' && (
+                  <div className="form-group-custom">
+                    <label>URL do Vídeo (.mp4 ou streaming)</label>
+                    <input 
+                      type="url" 
+                      value={momentForm.videoUrl} 
+                      onChange={e => setMomentForm({...momentForm, videoUrl: e.target.value})} 
+                      placeholder="Ex: https://www.w3schools.com/html/mov_bbb.mp4" 
+                      required={momentForm.type === 'video'}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Coluna da Direita */}
+              <div className="form-col">
+                <div className="form-group-custom">
+                  <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <span>Imagem ou Thumb do Vídeo</span>
+                    {/* Toggle URL / Upload */}
+                    <div style={{ display: 'flex', background: 'var(--color-bg-cream)', borderRadius: '20px', padding: '3px', border: '1px solid var(--glass-border)', gap: '2px' }}>
+                      <button
+                        type="button"
+                        onClick={() => { setImageInputMode('url'); setImageUploadPreview(null); }}
+                        style={{
+                          padding: '3px 12px', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '600',
+                          background: imageInputMode === 'url' ? 'var(--color-dark-green)' : 'transparent',
+                          color: imageInputMode === 'url' ? '#fff' : 'var(--color-text-muted)',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        🔗 URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setImageInputMode('upload'); setImageUploadPreview(null); }}
+                        style={{
+                          padding: '3px 12px', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '600',
+                          background: imageInputMode === 'upload' ? 'var(--color-dark-green)' : 'transparent',
+                          color: imageInputMode === 'upload' ? '#fff' : 'var(--color-text-muted)',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        📁 Upload
+                      </button>
+                    </div>
+                  </label>
+
+                  {imageInputMode === 'url' ? (
+                    <input
+                      type="url"
+                      value={momentForm.image && !momentForm.image.startsWith('data:') ? momentForm.image : ''}
+                      onChange={e => setMomentForm({...momentForm, image: e.target.value})}
+                      placeholder="https://images.unsplash.com/..."
+                      required={imageInputMode === 'url'}
+                    />
+                  ) : (
+                    <div>
+                      <label
+                        htmlFor="moment-image-upload-input"
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          border: '2px dashed var(--glass-border)', borderRadius: '8px', padding: '20px',
+                          cursor: 'pointer', background: 'var(--color-bg-cream)', transition: 'border-color 0.2s',
+                          gap: '8px'
+                        }}
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={e => {
+                          e.preventDefault();
+                          const file = e.dataTransfer.files[0];
+                          if (file) handleImageFileChange({ target: { files: [file] } }, 'moment');
+                        }}
+                      >
+                        {imageUploadPreview || (momentForm.image && momentForm.image.startsWith('data:')) ? (
+                          <img
+                            src={imageUploadPreview || momentForm.image}
+                            alt="preview"
+                            style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }}
+                          />
+                        ) : (
+                          <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                            <div style={{ fontSize: '2rem', marginBottom: '6px' }}>📷</div>
+                            <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>Clique para escolher ou arraste aqui</span>
+                            <br/>
+                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 5MB</span>
+                          </div>
+                        )}
+                        <input
+                          id="moment-image-upload-input"
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={e => handleImageFileChange(e, 'moment')}
+                        />
+                      </label>
+                      {(imageUploadPreview || (momentForm.image && momentForm.image.startsWith('data:'))) && (
+                        <button
+                          type="button"
+                          style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--color-accent-red)', background: 'none', border: 'none', cursor: 'pointer' }}
+                          onClick={() => { setImageUploadPreview(null); setMomentForm(prev => ({...prev, image: ''})); }}
+                        >
+                          ✕ Remover imagem
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Preview quando URL digitada */}
+                  {imageInputMode === 'url' && momentForm.image && !momentForm.image.startsWith('data:') && (
+                    <img
+                      src={momentForm.image}
+                      alt="preview"
+                      style={{ marginTop: '8px', width: '100%', height: '100px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--glass-border)' }}
+                      onError={e => { e.target.style.display = 'none'; }}
+                    />
+                  )}
+                </div>
+
+                <div className="form-group-custom">
+                  <label>Breve Descrição do Registro</label>
+                  <textarea 
+                    value={momentForm.description} 
+                    onChange={e => setMomentForm({...momentForm, description: e.target.value})} 
+                    rows="4" 
+                    placeholder="Conte a história por trás desse momento..."
+                    required 
+                  ></textarea>
+                </div>
+              </div>
+
+              <div className="modal-actions-footer">
+                <button type="button" className="btn btn-outline" onClick={() => setIsMomentModalOpen(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">Salvar Registro</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Toast Notification Premium */}
       {feedback.message && (
