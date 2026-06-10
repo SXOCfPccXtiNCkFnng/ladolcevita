@@ -98,7 +98,6 @@ export default function Destinos() {
           </div>
         ) : filteredDestinations.length === 0 ? (
           <div className="no-results text-center">
-            <div style={{ fontSize: '2.5rem', marginBottom: '16px', opacity: 0.4 }}>✈️</div>
             <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.8rem', color: 'var(--color-dark-green)', marginBottom: '12px' }}>
               {selectedFilter === 'Todos' ? 'Nenhum destino disponível no momento' : `Nenhum destino em ${selectedFilter} no momento`}
             </h3>
