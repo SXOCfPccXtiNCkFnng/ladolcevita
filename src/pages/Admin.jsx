@@ -471,6 +471,17 @@ export default function Admin() {
 
 
 
+  const formatPrice = (value) => {
+    if (!value) return '';
+    let clean = value.replace(/\D/g, '');
+    if (!clean) return '';
+    const number = Number(clean) / 100;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(number);
+  };
+
   // CRUD Handlers
   const handleOpenAddModal = () => {
     setModalMode('add');
@@ -498,13 +509,21 @@ export default function Admin() {
   const handleOpenEditModal = (trip) => {
     setModalMode('edit');
     setEditingTripId(trip.docId || trip.id);
+    
+    let formattedPrice = trip.price || '';
+    if (formattedPrice && !formattedPrice.includes(',')) {
+      formattedPrice = formatPrice(formattedPrice + ',00');
+    } else {
+      formattedPrice = formatPrice(formattedPrice);
+    }
+
     setTripForm({
       title: trip.title,
       country: trip.country,
       duration: trip.duration,
       departure: trip.departure,
       date: trip.date,
-      price: trip.price,
+      price: formattedPrice,
       spotsTotal: trip.spotsTotal,
       spotsLeft: trip.spotsLeft,
       status: trip.status,
@@ -1543,8 +1562,8 @@ export default function Admin() {
                     <input 
                       type="text" 
                       value={tripForm.price} 
-                      onChange={e => setTripForm({...tripForm, price: e.target.value})} 
-                      placeholder="Ex: R$ 18.500" 
+                      onChange={e => setTripForm({...tripForm, price: formatPrice(e.target.value)})} 
+                      placeholder="R$ 0,00" 
                       required 
                     />
                   </div>
