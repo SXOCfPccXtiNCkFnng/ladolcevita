@@ -48,9 +48,10 @@ export default function PwaPrompt() {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
-  // 5. Inicialização automática do OneSignal apenas quando o PWA for instalado (standalone)
+  // 5. Inicialização automática do OneSignal apenas quando o PWA for instalado (standalone) ou em modo teste (?test-push=true)
   useEffect(() => {
-    if (isInstalled) {
+    const isTestMode = window.location.search.includes('test-push=true');
+    if (isInstalled || isTestMode) {
       const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
       if (appId && appId !== 'YOUR_APP_ID_HERE') {
         if (!window.OneSignal) {
@@ -64,7 +65,7 @@ export default function PwaPrompt() {
                 appId: appId,
                 notifyButton: {
                   enable: true,
-                  position: 'bottom-right',
+                  position: 'bottom-left', // Mudamos para a esquerda para não ficar por baixo do WhatsApp
                   size: 'medium',
                   colors: {
                     'circle.background': 'var(--color-primary-gold)',
