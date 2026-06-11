@@ -87,9 +87,17 @@ export default function PwaPrompt() {
               const optedIn = OneSignal.User.PushSubscription.optedIn;
               setIsPushSubscribed(optedIn);
 
+              const permission = typeof Notification !== 'undefined' ? Notification.permission : 'default';
+              console.log('[PwaPrompt Debug] OneSignal initialized. optedIn:', optedIn, 'permission:', permission);
+
               const hasClosedPrompt = sessionStorage.getItem('la-dolce-vita-push-prompt-closed') === 'true';
-              if (!optedIn && !hasClosedPrompt) {
+              
+              // Em modo teste (?test-push=true), forçamos a exibição do banner para validação visual e de fluxo
+              if (isTestMode || (!optedIn && !hasClosedPrompt)) {
+                console.log('[PwaPrompt Debug] Showing Push Notification banner...');
                 setShowPushPrompt(true);
+              } else {
+                console.log('[PwaPrompt Debug] Push banner not shown because optedIn is true or user closed it.');
               }
 
               // Ouvir mudanças na inscrição
