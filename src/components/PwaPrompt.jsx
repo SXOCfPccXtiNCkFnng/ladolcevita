@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Smartphone, Download, X, Compass, PlusSquare } from 'lucide-react';
 
 export default function PwaPrompt() {
-  const [isInstalled, setIsInstalled] = useState(true);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(display-mode: standalone)').matches 
+      || window.navigator.standalone 
+      || (document.referrer && document.referrer.includes('android-app://'));
+  });
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -57,14 +62,16 @@ export default function PwaPrompt() {
     console.log('[PwaPrompt Debug] useEffect. isInstalled:', isInstalled, 'isTestMode:', isTestMode, 'appId:', appId);
     if (isInstalled || isTestMode) {
       if (appId && appId !== 'YOUR_APP_ID_HERE') {
-        if (!window.OneSignal) {
-          console.log('[PwaPrompt Debug] Appending OneSignal script...');
-          const script = document.createElement('script');
-          script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
-          script.defer = true;
-          script.onload = () => {
-            window.OneSignal = window.OneSignal || [];
-            window.OneSignal.push(async () => {
+        // Inicializa a fila global do OneSignal se necessário
+        window.OneSignal = window.OneSignal || [];
+
+        // Evita enfileirar o callback de inicialização múltiplas vezes
+        if (!window.OneSignalInitCalled) {
+          window.OneSignalInitCalled = true;
+          console.log('[PwaPrompt Debug] Queuing OneSignal initialization...');
+          window.OneSignal.push(async () => {
+            console.log('[PwaPrompt Debug] Running OneSignal init...');
+            try {
               await window.OneSignal.init({
                 appId: appId,
                 notifyButton: {
@@ -93,8 +100,18 @@ export default function PwaPrompt() {
                   setShowPushPrompt(false);
                 }
               });
-            });
-          };
+            } catch (err) {
+              console.error('[PwaPrompt] Erro ao inicializar OneSignal:', err);
+            }
+          });
+        }
+
+        // Carrega o script apenas se não estiver presente no DOM
+        if (!document.querySelector('script[src*="OneSignalSDK.page.js"]')) {
+          console.log('[PwaPrompt Debug] Appending OneSignal script to head...');
+          const script = document.createElement('script');
+          script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+          script.defer = true;
           document.head.appendChild(script);
         }
       }
