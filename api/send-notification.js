@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido. Utilize POST.' });
   }
 
-  const { title, message, url } = req.body;
+  const { title, message, url, image } = req.body;
 
   if (!title || !message) {
     return res.status(400).json({ error: 'Título (title) e Mensagem (message) são obrigatórios.' });
@@ -44,7 +44,9 @@ export default async function handler(req, res) {
         included_segments: ['All'],
         headings: { en: title, pt: title },
         contents: { en: message, pt: message },
-        url: url || ''
+        url: url || '',
+        chrome_web_image: image || '',
+        big_picture: image || ''
       })
     });
 

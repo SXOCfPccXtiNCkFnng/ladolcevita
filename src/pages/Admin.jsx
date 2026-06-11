@@ -565,7 +565,7 @@ export default function Admin() {
   };
 
   // Dispara notificação push via Vercel Serverless Function
-  const triggerPushNotification = async (title, message) => {
+  const triggerPushNotification = async (title, message, imageUrl = null) => {
     try {
       const response = await fetch('/api/send-notification', {
         method: 'POST',
@@ -575,7 +575,8 @@ export default function Admin() {
         body: JSON.stringify({
           title,
           message,
-          url: window.location.origin
+          url: window.location.origin,
+          image: imageUrl
         }),
       });
       const data = await response.json();
@@ -627,7 +628,8 @@ export default function Admin() {
           if (sendPush) {
             triggerPushNotification(
               "Nova Viagem Disponível! ✈️",
-              `Conheça nosso novo roteiro: "${tripForm.title}" (${tripForm.duration}). Vagas limitadas!`
+              `Conheça nosso novo roteiro: "${tripForm.title}" (${tripForm.duration}). Vagas limitadas!`,
+              tripData.image
             );
           }
         } else {
@@ -638,7 +640,8 @@ export default function Admin() {
           if (sendPush) {
             triggerPushNotification(
               "Roteiro Atualizado! ✨",
-              `Temos novidades e atualizações no roteiro "${tripForm.title}". Venha conferir!`
+              `Temos novidades e atualizações no roteiro "${tripForm.title}". Venha conferir!`,
+              tripData.image
             );
           }
         }
