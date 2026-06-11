@@ -53,10 +53,12 @@ export default function PwaPrompt() {
   // 5. Inicialização automática do OneSignal apenas quando o PWA for instalado (standalone) ou em modo teste (?test-push=true)
   useEffect(() => {
     const isTestMode = window.location.search.includes('test-push=true');
+    const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
+    console.log('[PwaPrompt Debug] useEffect. isInstalled:', isInstalled, 'isTestMode:', isTestMode, 'appId:', appId);
     if (isInstalled || isTestMode) {
-      const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
       if (appId && appId !== 'YOUR_APP_ID_HERE') {
         if (!window.OneSignal) {
+          console.log('[PwaPrompt Debug] Appending OneSignal script...');
           const script = document.createElement('script');
           script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
           script.defer = true;
