@@ -11,6 +11,8 @@ import Admin from './pages/Admin';
 import whatsappIcon from './assets/whatsapp.png';
 
 import { useSettings } from './context/SettingsContext';
+import PwaPrompt from './components/PwaPrompt';
+import CookieConsent from './components/CookieConsent';
 
 function App() {
   const [currentTab, setCurrentTab] = useState('home');
@@ -126,6 +128,10 @@ function App() {
       >
         <img src={whatsappIcon} alt="WhatsApp" className="floating-whatsapp-icon" />
       </button>
+
+      {/* Prompts e Banners Globais */}
+      <PwaPrompt />
+      <CookieConsent />
 
       <style>{`
         .app-wrapper {

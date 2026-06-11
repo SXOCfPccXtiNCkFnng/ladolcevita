@@ -84,6 +84,7 @@ export default function Admin() {
   // Estado para controle de upload de imagem
   const [imageInputMode, setImageInputMode] = useState('url'); // 'url' | 'upload'
   const [imageUploadPreview, setImageUploadPreview] = useState(null);
+  const [sendPush, setSendPush] = useState(false);
 
   const handleImageFileChange = (e, formType = 'trip') => {
     const file = e.target.files[0];
@@ -488,6 +489,7 @@ export default function Admin() {
     setEditingTripId(null);
     setImageInputMode('url');
     setImageUploadPreview(null);
+    setSendPush(false);
     setTripForm({
       title: '',
       country: 'Itália',
@@ -509,6 +511,7 @@ export default function Admin() {
   const handleOpenEditModal = (trip) => {
     setModalMode('edit');
     setEditingTripId(trip.docId || trip.id);
+    setSendPush(false);
     
     let formattedPrice = trip.price || '';
     if (formattedPrice && !formattedPrice.includes(',')) {
@@ -561,6 +564,31 @@ export default function Admin() {
     }
   };
 
+  // Dispara notificação push via Vercel Serverless Function
+  const triggerPushNotification = async (title, message) => {
+    try {
+      const response = await fetch('/api/send-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          message,
+          url: window.location.origin
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Notificação push enviada com sucesso:', data);
+      } else {
+        console.warn('Erro ao enviar push:', data.error);
+      }
+    } catch (err) {
+      console.error('Falha ao conectar com o serviço de notificações:', err);
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
@@ -595,12 +623,27 @@ export default function Admin() {
           tripData.id = tripForm.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
           await addDoc(collection(db, 'trips'), tripData);
           showFeedback('success', 'Nova viagem criada com sucesso!');
+          
+          if (sendPush) {
+            triggerPushNotification(
+              "Nova Viagem Disponível! ✈️",
+              `Conheça nosso novo roteiro: "${tripForm.title}" (${tripForm.duration}). Vagas limitadas!`
+            );
+          }
         } else {
           // Update
           await updateDoc(doc(db, 'trips', editingTripId), tripData);
           showFeedback('success', 'Viagem atualizada com sucesso!');
+          
+          if (sendPush) {
+            triggerPushNotification(
+              "Roteiro Atualizado! ✨",
+              `Temos novidades e atualizações no roteiro "${tripForm.title}". Venha conferir!`
+            );
+          }
         }
         setIsModalOpen(false);
+        setSendPush(false);
       } catch (err) {
         console.error("Erro ao salvar no banco:", err);
         showFeedback('error', "Erro ao gravar dados no Firebase: " + err.message);
@@ -614,6 +657,13 @@ export default function Admin() {
         };
         mockTrips.push(newLocalTrip);
         setTrips([...mockTrips]);
+        
+        if (sendPush) {
+          triggerPushNotification(
+            "Nova Viagem Disponível! ✈️ (Demo Local)",
+            `Conheça nosso novo roteiro: "${tripForm.title}" (${tripForm.duration}). Vagas limitadas!`
+          );
+        }
       } else {
         const idx = mockTrips.findIndex(t => t.id === editingTripId);
         if (idx !== -1) {
@@ -623,8 +673,16 @@ export default function Admin() {
           };
           setTrips([...mockTrips]);
         }
+        
+        if (sendPush) {
+          triggerPushNotification(
+            "Roteiro Atualizado! ✨ (Demo Local)",
+            `Temos novidades e atualizações no roteiro "${tripForm.title}". Venha conferir!`
+          );
+        }
       }
       setIsModalOpen(false);
+      setSendPush(false);
     }
   };
 
@@ -1762,6 +1820,19 @@ export default function Admin() {
                     placeholder="Texto curto e atrativo sobre a viagem..."
                     required 
                   ></textarea>
+                </div>
+
+                <div className="form-group-custom" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px', marginTop: '15px' }}>
+                  <input 
+                    type="checkbox" 
+                    id="send-push-notification" 
+                    checked={sendPush} 
+                    onChange={e => setSendPush(e.target.checked)} 
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
+                  />
+                  <label htmlFor="send-push-notification" style={{ marginBottom: 0, cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-dark-green)' }}>
+                    Enviar notificação no celular dos clientes sobre esta viagem
+                  </label>
                 </div>
               </div>
 
