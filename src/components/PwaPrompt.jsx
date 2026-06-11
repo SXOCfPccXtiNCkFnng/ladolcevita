@@ -6,6 +6,8 @@ export default function PwaPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
+  const [showPushPrompt, setShowPushPrompt] = useState(false);
+  const [isPushSubscribed, setIsPushSubscribed] = useState(true); // Inicializa como true para evitar flash visual
 
   useEffect(() => {
     // 1. Detecta se está rodando em modo standalone (PWA instalado)
@@ -96,6 +98,24 @@ export default function PwaPrompt() {
                   message: "Inscrição realizada com sucesso! Avisaremos por aqui quando houver novidades."
                 }
               });
+
+              // Verifica o status de inscrição inicial
+              const optedIn = window.OneSignal.User.pushSubscription.optedIn;
+              setIsPushSubscribed(optedIn);
+
+              const hasClosedPrompt = sessionStorage.getItem('la-dolce-vita-push-prompt-closed') === 'true';
+              if (!optedIn && !hasClosedPrompt) {
+                setShowPushPrompt(true);
+              }
+
+              // Ouvir mudanças na inscrição
+              window.OneSignal.User.pushSubscription.addEventListener('change', (event) => {
+                const isSubbed = event.current.optedIn;
+                setIsPushSubscribed(isSubbed);
+                if (isSubbed) {
+                  setShowPushPrompt(false);
+                }
+              });
             });
           };
           document.head.appendChild(script);
@@ -123,47 +143,94 @@ export default function PwaPrompt() {
     setShowPrompt(false);
   };
 
-  if (!showPrompt || isInstalled) return null;
+  const handleAcceptPush = async () => {
+    if (window.OneSignal) {
+      try {
+        await window.OneSignal.Notifications.requestPermission();
+        setShowPushPrompt(false);
+      } catch (err) {
+        console.error('Erro ao solicitar permissão de notificações:', err);
+      }
+    }
+  };
+
+  const handleDeclinePush = () => {
+    sessionStorage.setItem('la-dolce-vita-push-prompt-closed', 'true');
+    setShowPushPrompt(false);
+  };
+
+  if (!showPrompt && !showPushPrompt) return null;
 
   return (
-    <div className="pwa-install-prompt-bar glass-card animate-fade-in-up">
-      <button onClick={handleClosePrompt} className="pwa-close-btn" aria-label="Fechar">
-        <X size={16} />
-      </button>
-
-      <div className="pwa-prompt-header">
-        <div className="pwa-icon-wrapper">
-          <Smartphone size={22} className="pwa-phone-icon" />
-        </div>
-        <div className="pwa-title-area">
-          <h4>Instalar o Aplicativo</h4>
-          <p>Instale em sua tela de início para acessar offline e ativar as notificações de novas viagens.</p>
-        </div>
-      </div>
-
-      <div className="pwa-instructions-area">
-        {isIOS ? (
-          <div className="ios-instructions">
-            <p className="instruction-step">
-              <Compass size={14} className="step-icon" />
-              1. Toque no botão de <strong>Compartilhar</strong> (ícone de quadrado com seta para cima no Safari).
-            </p>
-            <p className="instruction-step">
-              <PlusSquare size={14} className="step-icon" />
-              2. Role para baixo e selecione <strong>Adicionar à Tela de Início</strong>.
-            </p>
-          </div>
-        ) : deferredPrompt ? (
-          <button onClick={handleInstallClick} className="btn btn-pwa-install">
-            <Download size={15} style={{ marginRight: '8px' }} />
-            <span>Baixar Aplicativo</span>
+    <>
+      {showPrompt && !isInstalled && (
+        <div className="pwa-install-prompt-bar glass-card animate-fade-in-up">
+          <button onClick={handleClosePrompt} className="pwa-close-btn" aria-label="Fechar">
+            <X size={16} />
           </button>
-        ) : (
-          <div className="generic-instructions">
-            <p>Clique nas opções do navegador (três pontos) e selecione <strong>Adicionar à tela inicial</strong> ou <strong>Instalar Aplicativo</strong>.</p>
+
+          <div className="pwa-prompt-header">
+            <div className="pwa-icon-wrapper">
+              <Smartphone size={22} className="pwa-phone-icon" />
+            </div>
+            <div className="pwa-title-area">
+              <h4>Instalar o Aplicativo</h4>
+              <p>Instale em sua tela de início para acessar offline e ativar as notificações de novas viagens.</p>
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="pwa-instructions-area">
+            {isIOS ? (
+              <div className="ios-instructions">
+                <p className="instruction-step">
+                  <Compass size={14} className="step-icon" />
+                  1. Toque no botão de <strong>Compartilhar</strong> (ícone de quadrado com seta para cima no Safari).
+                </p>
+                <p className="instruction-step">
+                  <PlusSquare size={14} className="step-icon" />
+                  2. Role para baixo e selecione <strong>Adicionar à Tela de Início</strong>.
+                </p>
+              </div>
+            ) : deferredPrompt ? (
+              <button onClick={handleInstallClick} className="btn btn-pwa-install">
+                <Download size={15} style={{ marginRight: '8px' }} />
+                <span>Baixar Aplicativo</span>
+              </button>
+            ) : (
+              <div className="generic-instructions">
+                <p>Clique nas opções do navegador (três pontos) e selecione <strong>Adicionar à tela inicial</strong> ou <strong>Instalar Aplicativo</strong>.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showPushPrompt && (
+        <div className="push-prompt-bar glass-card animate-fade-in-up">
+          <button onClick={handleDeclinePush} className="pwa-close-btn" aria-label="Fechar">
+            <X size={16} />
+          </button>
+
+          <div className="pwa-prompt-header">
+            <div className="pwa-icon-wrapper">
+              <Smartphone size={22} className="pwa-phone-icon" />
+            </div>
+            <div className="pwa-title-area">
+              <h4 className="push-prompt-title">Ativar Notificações</h4>
+              <p className="push-prompt-desc">Deseja ser notificado sobre novas viagens exclusivas diretamente no seu celular?</p>
+            </div>
+          </div>
+
+          <div className="push-prompt-buttons">
+            <button onClick={handleAcceptPush} className="btn-push-accept">
+              Ativar
+            </button>
+            <button onClick={handleDeclinePush} className="btn-push-decline">
+              Depois
+            </button>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .pwa-install-prompt-bar {
@@ -182,6 +249,92 @@ export default function PwaPrompt() {
           backdrop-filter: blur(12px);
           box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
           color: #ffffff;
+        }
+
+        .push-prompt-bar {
+          position: fixed;
+          bottom: 30px;
+          left: 30px;
+          max-width: 420px;
+          padding: 24px;
+          z-index: 99999;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          border-radius: var(--border-radius-md);
+          background: rgba(26, 38, 29, 0.96);
+          border: 1px solid rgba(197, 168, 128, 0.35);
+          backdrop-filter: blur(12px);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+          color: #ffffff;
+        }
+
+        .push-prompt-title {
+          font-family: var(--font-body);
+          font-size: 0.95rem;
+          font-weight: 700;
+          margin-bottom: 4px;
+          color: var(--color-primary-gold);
+        }
+
+        .push-prompt-desc {
+          font-size: 0.78rem;
+          line-height: 1.4;
+          color: rgba(255, 255, 255, 0.75);
+          margin: 0;
+        }
+
+        .push-prompt-buttons {
+          display: flex;
+          gap: 12px;
+          margin-top: 4px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding-top: 14px;
+        }
+
+        .btn-push-accept {
+          background-color: var(--color-primary-gold);
+          color: var(--color-dark-green-dark);
+          border: 1px solid var(--color-primary-gold);
+          padding: 10px 18px;
+          font-weight: 700;
+          font-size: 0.8rem;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          border-radius: var(--border-radius-sm);
+          cursor: pointer;
+          transition: var(--transition-smooth);
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .btn-push-accept:hover {
+          background-color: transparent;
+          color: #ffffff;
+          border-color: #ffffff;
+        }
+
+        .btn-push-decline {
+          background-color: transparent;
+          color: rgba(255, 255, 255, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 10px 18px;
+          font-weight: 600;
+          font-size: 0.8rem;
+          border-radius: var(--border-radius-sm);
+          cursor: pointer;
+          transition: var(--transition-smooth);
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .btn-push-decline:hover {
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.5);
         }
 
         .pwa-close-btn {
@@ -292,14 +445,18 @@ export default function PwaPrompt() {
         }
 
         @media (max-width: 576px) {
-          .pwa-install-prompt-bar {
+          .pwa-install-prompt-bar, .push-prompt-bar {
             bottom: 20px;
             left: 20px;
             right: 20px;
             max-width: calc(100% - 40px);
           }
+          .push-prompt-buttons {
+            flex-direction: column;
+            gap: 8px;
+          }
         }
       `}</style>
-    </div>
+    </>
   );
 }
