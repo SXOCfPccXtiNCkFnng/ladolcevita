@@ -22,6 +22,56 @@ export default function Home({ setCurrentTab }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
+  // Controle de arrastar com o dedo (Swipe) no Mobile
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+  const [testTouchStartX, setTestTouchStartX] = useState(null);
+  const [testTouchEndX, setTestTouchEndX] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEndHero = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+    } else if (isRightSwipe) {
+      setActiveSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    }
+  };
+
+  const onTestTouchStart = (e) => {
+    setTestTouchEndX(null);
+    setTestTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const onTestTouchMove = (e) => {
+    setTestTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const onTestTouchEnd = () => {
+    if (!testTouchStartX || !testTouchEndX || testimonials.length === 0) return;
+    const distance = testTouchStartX - testTouchEndX;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    } else if (isRightSwipe) {
+      setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    }
+  };
+
   const featuredDestinations = destinations.slice(0, 3);
 
 
@@ -75,8 +125,13 @@ export default function Home({ setCurrentTab }) {
 
   return (
     <div className="home-container animate-fade-in">
-      {/* 1. HERO SECTION (DYNAMIC BACKGROUND CAROUSEL) */}
-      <section className="hero-section">
+      {/* 1. HERO SECTION (DYNAMIC BACKGROUND CAROUSEL WITH SWIPE) */}
+      <section 
+        className="hero-section"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEndHero}
+      >
         {/* Background Slides */}
         {heroSlides.map((slide, index) => (
           <div
@@ -255,7 +310,12 @@ export default function Home({ setCurrentTab }) {
             <h2 className="section-title">Histórias Reais</h2>
           </div>
 
-          <div className="testimonials-slider-wrapper reveal reveal-delay-1">
+          <div 
+            className="testimonials-slider-wrapper reveal reveal-delay-1"
+            onTouchStart={onTestTouchStart}
+            onTouchMove={onTestTouchMove}
+            onTouchEnd={onTestTouchEnd}
+          >
             {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial.id}
