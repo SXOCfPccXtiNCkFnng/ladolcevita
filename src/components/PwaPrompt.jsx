@@ -20,8 +20,11 @@ export default function PwaPrompt() {
     const detectIOS = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(detectIOS);
 
-    // 3. Se não estiver instalado, mostra o banner de sugestão de instalação
-    if (!checkStandalone) {
+    // 3. Se não estiver instalado E for um dispositivo móvel/tablet, mostra o banner de sugestão de instalação
+    const isMobileDevice = /iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/i.test(navigator.userAgent)
+      || (window.matchMedia && window.matchMedia('(max-width: 992px)').matches);
+
+    if (!checkStandalone && isMobileDevice) {
       // Exibe o aviso após 3 segundos para não sobrecarregar na entrada
       const timer = setTimeout(() => {
         // Verifica se o usuário já fechou o banner nesta sessão

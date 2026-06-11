@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Check } from 'lucide-react';
+import { Cookie, Check } from 'lucide-react';
 
 export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
@@ -27,7 +27,7 @@ export default function CookieConsent() {
     <div className="cookie-consent-bar glass-card animate-fade-in-up">
       <div className="cookie-content">
         <div className="cookie-icon-wrapper">
-          <Shield size={20} className="cookie-shield-icon" />
+          <Cookie size={20} className="cookie-shield-icon" />
         </div>
         <div className="cookie-text">
           <h4>Nós valorizamos a sua privacidade</h4>
