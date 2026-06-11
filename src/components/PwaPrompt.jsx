@@ -62,17 +62,17 @@ export default function PwaPrompt() {
     console.log('[PwaPrompt Debug] useEffect. isInstalled:', isInstalled, 'isTestMode:', isTestMode, 'appId:', appId);
     if (isInstalled || isTestMode) {
       if (appId && appId !== 'YOUR_APP_ID_HERE') {
-        // Inicializa a fila global do OneSignal se necessário
-        window.OneSignal = window.OneSignal || [];
+        // Inicializa a fila global do OneSignal se necessário usando a API v16 (OneSignalDeferred)
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
 
         // Evita enfileirar o callback de inicialização múltiplas vezes
         if (!window.OneSignalInitCalled) {
           window.OneSignalInitCalled = true;
           console.log('[PwaPrompt Debug] Queuing OneSignal initialization...');
-          window.OneSignal.push(async () => {
+          window.OneSignalDeferred.push(async (OneSignal) => {
             console.log('[PwaPrompt Debug] Running OneSignal init...');
             try {
-              await window.OneSignal.init({
+              await OneSignal.init({
                 appId: appId,
                 notifyButton: {
                   enable: false
@@ -84,7 +84,7 @@ export default function PwaPrompt() {
               });
 
               // Verifica o status de inscrição inicial
-              const optedIn = window.OneSignal.User.pushSubscription.optedIn;
+              const optedIn = OneSignal.User.pushSubscription.optedIn;
               setIsPushSubscribed(optedIn);
 
               const hasClosedPrompt = sessionStorage.getItem('la-dolce-vita-push-prompt-closed') === 'true';
@@ -93,7 +93,7 @@ export default function PwaPrompt() {
               }
 
               // Ouvir mudanças na inscrição
-              window.OneSignal.User.pushSubscription.addEventListener('change', (event) => {
+              OneSignal.User.pushSubscription.addEventListener('change', (event) => {
                 const isSubbed = event.current.optedIn;
                 setIsPushSubscribed(isSubbed);
                 if (isSubbed) {
