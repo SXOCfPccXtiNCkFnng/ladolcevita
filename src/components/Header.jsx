@@ -109,10 +109,9 @@ export default function Header({ currentTab, setCurrentTab }) {
             <li style={{ marginTop: '24px', padding: '0 24px' }}>
               <button 
                 onClick={openWhatsApp} 
-                className="btn header-whatsapp-btn w-full"
-                style={{ width: '100%', justifyContent: 'center' }}
+                className="mobile-whatsapp-btn"
               >
-                <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon-img" style={{ filter: 'brightness(0) invert(1)' }} />
+                <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon-img" style={{ filter: 'brightness(0) invert(1)', width: '16px', height: '16px', marginRight: '0' }} />
                 <span>Falar com Especialista</span>
               </button>
             </li>
@@ -415,6 +414,30 @@ export default function Header({ currentTab, setCurrentTab }) {
           }
         }
 
+        .mobile-whatsapp-btn {
+          background-color: var(--color-dark-green);
+          border: 1px solid var(--color-dark-green);
+          color: #FFFFFF;
+          border-radius: var(--border-radius-sm);
+          padding: 12px 24px;
+          font-weight: 700;
+          font-size: 0.85rem;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          transition: var(--transition-smooth);
+        }
+
+        .mobile-whatsapp-btn:hover {
+          background-color: var(--color-primary-gold);
+          border-color: var(--color-primary-gold);
+          color: var(--color-dark-green-dark);
+        }
+
         @media (max-width: 992px) {
           .desktop-nav {
             display: none;
@@ -424,16 +447,16 @@ export default function Header({ currentTab, setCurrentTab }) {
             display: block;
           }
 
-          .header-whatsapp-btn span {
+          .header-cta .header-whatsapp-btn span {
             display: none;
           }
           
-          .header-whatsapp-btn {
+          .header-cta .header-whatsapp-btn {
             padding: 10px;
             border-radius: 50%;
           }
           
-          .header-whatsapp-btn .whatsapp-icon-img {
+          .header-cta .header-whatsapp-btn .whatsapp-icon-img {
             margin-right: 0 !important;
           }
         }
