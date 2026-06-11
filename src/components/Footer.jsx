@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Mail, Clock } from 'lucide-react';
 import logo from '../assets/logo.png';
 import whatsappIcon from '../assets/whatsapp.png';
@@ -7,9 +7,16 @@ import { useSettings } from '../context/SettingsContext';
 export default function Footer({ currentTab, setCurrentTab }) {
   const { settings } = useSettings();
 
-  // Clique duplo secreto no Copyright para abrir o Admin
-  const handleCopyrightDoubleClick = () => {
-    window.location.hash = 'painel-secreto';
+  const lastClickRef = useRef(0);
+
+  // Clique duplo secreto no Copyright para abrir o Admin (funciona em Desktop e Mobile)
+  const handleCopyrightClick = () => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 350; // ms
+    if (now - lastClickRef.current < DOUBLE_TAP_DELAY) {
+      window.location.hash = 'painel-secreto';
+    }
+    lastClickRef.current = now;
   };
 
   const openWhatsApp = () => {
@@ -70,7 +77,7 @@ export default function Footer({ currentTab, setCurrentTab }) {
         <div className="container bottom-content">
           <span 
             className="copyright" 
-            onDoubleClick={handleCopyrightDoubleClick}
+            onClick={handleCopyrightClick}
           >
             © {new Date().getFullYear()} La Dolce Vita. Todos os direitos reservados. | Desenvolvido por <a href="https://domutech.digital/" target="_blank" rel="noopener noreferrer" className="credit-link">Alan Felipe</a>
           </span>
