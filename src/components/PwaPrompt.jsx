@@ -80,6 +80,16 @@ export default function PwaPrompt() {
                 welcomeNotification: {
                   title: "La Dolce Vita",
                   message: "Inscrição realizada com sucesso! Avisaremos por aqui quando houver novidades."
+                },
+                promptOptions: {
+                  slidedown: {
+                    prompts: [
+                      {
+                        type: "push",
+                        autoPrompt: false
+                      }
+                    ]
+                  }
                 }
               });
 
