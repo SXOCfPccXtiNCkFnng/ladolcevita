@@ -68,32 +68,7 @@ export default function PwaPrompt() {
               await window.OneSignal.init({
                 appId: appId,
                 notifyButton: {
-                  enable: true,
-                  position: 'bottom-left', // Mudamos para a esquerda para não ficar por baixo do WhatsApp
-                  size: 'medium',
-                  colors: {
-                    'circle.background': 'var(--color-primary-gold)',
-                    'circle.foreground': 'var(--color-dark-green-dark)',
-                    'badge.background': 'var(--color-accent-red)',
-                    'badge.foreground': '#white',
-                    'badge.bordercolor': '#white',
-                    'pulse.color': 'var(--color-primary-gold)',
-                    'dialog.button.background.hovering': 'var(--color-dark-green)',
-                    'dialog.button.background.active': 'var(--color-dark-green-dark)',
-                    'dialog.button.background': 'var(--color-primary-gold)',
-                    'dialog.button.foreground': 'var(--color-dark-green-dark)'
-                  },
-                  text: {
-                    'tip.state.unsubscribed': 'Receber alertas de novas viagens',
-                    'tip.state.subscribed': 'Você receberá os alertas',
-                    'tip.state.blocked': 'Bloqueou as notificações',
-                    'message.action.subscribed': 'Obrigado por se inscrever!',
-                    'message.action.resubscribed': 'Inscrição reativada!',
-                    'message.action.unsubscribed': 'Você cancelou a inscrição',
-                    'dialog.main.title': 'Gerenciar Notificações do App',
-                    'dialog.main.button.subscribe': 'ATIVAR SININHO',
-                    'dialog.main.button.unsubscribe': 'DESATIVAR SININHO'
-                  }
+                  enable: false
                 },
                 welcomeNotification: {
                   title: "La Dolce Vita",
