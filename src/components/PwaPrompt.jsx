@@ -84,7 +84,7 @@ export default function PwaPrompt() {
               });
 
               // Verifica o status de inscrição inicial
-              const optedIn = OneSignal.User.pushSubscription.optedIn;
+              const optedIn = OneSignal.User.PushSubscription.optedIn;
               setIsPushSubscribed(optedIn);
 
               const hasClosedPrompt = sessionStorage.getItem('la-dolce-vita-push-prompt-closed') === 'true';
@@ -93,7 +93,7 @@ export default function PwaPrompt() {
               }
 
               // Ouvir mudanças na inscrição
-              OneSignal.User.pushSubscription.addEventListener('change', (event) => {
+              OneSignal.User.PushSubscription.addEventListener('change', (event) => {
                 const isSubbed = event.current.optedIn;
                 setIsPushSubscribed(isSubbed);
                 if (isSubbed) {
