@@ -32,22 +32,26 @@ export default async function handler(req, res) {
     });
   }
 
-  try {
+    const payload = {
+      app_id: appId,
+      included_segments: ['All'],
+      headings: { en: title, pt: title },
+      contents: { en: message, pt: message },
+      url: url || ''
+    };
+
+    if (image && typeof image === 'string' && image.trim().startsWith('http')) {
+      payload.chrome_web_image = image.trim();
+      payload.big_picture = image.trim();
+    }
+
     const response = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${apiKey}`
       },
-      body: JSON.stringify({
-        app_id: appId,
-        included_segments: ['All'],
-        headings: { en: title, pt: title },
-        contents: { en: message, pt: message },
-        url: url || '',
-        chrome_web_image: image || '',
-        big_picture: image || ''
-      })
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
