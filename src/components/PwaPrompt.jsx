@@ -4,9 +4,11 @@ import { Smartphone, Download, X, Compass, PlusSquare } from 'lucide-react';
 export default function PwaPrompt() {
   const [isInstalled, setIsInstalled] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(display-mode: standalone)').matches 
+    return !!(
+      window.matchMedia('(display-mode: standalone)').matches 
       || window.navigator.standalone 
-      || (document.referrer && document.referrer.includes('android-app://'));
+      || (document.referrer && document.referrer.includes('android-app://'))
+    );
   });
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -16,9 +18,11 @@ export default function PwaPrompt() {
 
   useEffect(() => {
     // 1. Detecta se está rodando em modo standalone (PWA instalado)
-    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches 
+    const checkStandalone = !!(
+      window.matchMedia('(display-mode: standalone)').matches 
       || window.navigator.standalone 
-      || document.referrer.includes('android-app://');
+      || (document.referrer && document.referrer.includes('android-app://'))
+    );
     
     setIsInstalled(checkStandalone);
 
