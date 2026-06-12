@@ -32,6 +32,7 @@ export default async function handler(req, res) {
     });
   }
 
+  try {
     const payload = {
       app_id: appId,
       included_segments: ['All'],
