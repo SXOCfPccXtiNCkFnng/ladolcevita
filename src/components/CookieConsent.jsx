@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, Check } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Verifica se o usuário já aceitou os cookies anteriormente
@@ -30,15 +32,18 @@ export default function CookieConsent() {
           <Cookie size={20} className="cookie-shield-icon" />
         </div>
         <div className="cookie-text">
-          <h4>Nós valorizamos a sua privacidade</h4>
+          <h4>{t("Nós valorizamos a sua privacidade", "We value your privacy")}</h4>
           <p>
-            Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar nossos serviços de viagens de luxo. Ao navegar, você concorda com nosso uso de cookies.
+            {t(
+              "Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar nossos serviços de viagens de luxo. Ao navegar, você concorda com nosso uso de cookies.",
+              "We use cookies to improve your experience, analyze site traffic, and personalize our luxury travel services. By browsing, you agree to our use of cookies."
+            )}
           </p>
         </div>
       </div>
       <button onClick={handleAccept} className="btn btn-cookie-accept">
         <Check size={16} style={{ marginRight: '6px' }} />
-        <span>Aceitar e Continuar</span>
+        <span>{t("Aceitar e Continuar", "Accept & Continue")}</span>
       </button>
 
       <style>{`

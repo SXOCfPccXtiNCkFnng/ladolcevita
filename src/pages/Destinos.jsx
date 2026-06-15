@@ -7,6 +7,7 @@ import heroTuscany from '../assets/hero_tuscany.png';
 import whatsappIcon from '../assets/whatsapp.png';
 
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Destinos() {
   const [selectedFilter, setSelectedFilter] = useState('Todos');
@@ -14,6 +15,7 @@ export default function Destinos() {
 
   const { destinations, loading: destinationsLoading } = useDestinations();
   const { settings } = useSettings();
+  const { t } = useLanguage();
 
   // Gera os países únicos dinamicamente a partir dos destinos disponíveis
   const uniqueCountries = [...new Set(destinations.map(d => d.country))].sort();
@@ -31,9 +33,15 @@ export default function Destinos() {
   });
 
   const openWhatsApp = (destinationName = null) => {
-    let text = "Olá! Gostaria de conversar com um especialista em viagens da La Dolce Vita.";
+    let text = t(
+      "Olá! Gostaria de conversar com um especialista em viagens da La Dolce Vita.",
+      "Hello! I would like to speak with a La Dolce Vita travel specialist."
+    );
     if (destinationName) {
-      text = `Olá! Vi o destino "${destinationName}" no site da La Dolce Vita e gostaria de planejar uma viagem personalizada.`;
+      text = t(
+        `Olá! Vi o destino "${destinationName}" no site da La Dolce Vita e gostaria de planejar uma viagem personalizada.`,
+        `Hello! I saw the destination "${destinationName}" on the La Dolce Vita website and would like to plan a custom trip.`
+      );
     }
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -43,8 +51,8 @@ export default function Destinos() {
       {/* 1. HERO HEADER BANNER (Editorial com imagem de fundo) */}
       <section className="destinos-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(26, 38, 29, 0.7) 0%, rgba(26, 38, 29, 0.8) 100%), url(${heroTuscany})` }}>
         <div className="container destinos-hero-content text-center">
-          <h1>Destinos</h1>
-          <p>Lugares que encantam, histórias que ficam e experiências que transformam cada viagem em algo único.</p>
+          <h1>{t("Destinos", "Destinations")}</h1>
+          <p>{t("Lugares que encantam, histórias que ficam e experiências que transformam cada viagem em algo único.", "Places that enchant, stories that stay, and experiences that transform each trip into something unique.")}</p>
         </div>
 
         {/* Divisor de curva assimétrica elegante */}
@@ -62,7 +70,7 @@ export default function Destinos() {
             className={`filter-pill-btn ${selectedFilter === 'Todos' ? 'active' : ''}`}
             onClick={() => setSelectedFilter('Todos')}
           >
-            Todos os destinos
+            {t("Todos os destinos", "All destinations")}
           </button>
 
           {/* Pills gerados dinamicamente para cada país com viagens */}
@@ -72,7 +80,7 @@ export default function Destinos() {
               className={`filter-pill-btn ${selectedFilter === country ? 'active' : ''}`}
               onClick={() => setSelectedFilter(country)}
             >
-              {country}
+              {t(country)}
             </button>
           ))}
 
@@ -82,7 +90,7 @@ export default function Destinos() {
               className={`filter-pill-btn ${selectedFilter === 'Outros' ? 'active' : ''}`}
               onClick={() => setSelectedFilter('Outros')}
             >
-              Outros
+              {t("Outros", "Others")}
             </button>
           )}
         </div>
@@ -93,18 +101,18 @@ export default function Destinos() {
         {destinationsLoading ? (
           <div className="no-results text-center" style={{ padding: '60px 0' }}>
             <RefreshCw size={32} style={{ color: 'var(--color-primary-gold)', animation: 'spin-filter 2s linear infinite', marginBottom: '16px' }} />
-            <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>Carregando destinos...</p>
+            <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>{t("Carregando destinos...", "Loading destinations...")}</p>
             <style>{`@keyframes spin-filter { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }`}</style>
           </div>
         ) : filteredDestinations.length === 0 ? (
           <div className="no-results text-center">
             <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.8rem', color: 'var(--color-dark-green)', marginBottom: '12px' }}>
-              {selectedFilter === 'Todos' ? 'Nenhum destino disponível no momento' : `Nenhum destino em ${selectedFilter} no momento`}
+              {selectedFilter === 'Todos' ? t('Nenhum destino disponível no momento', 'No destinations available at the moment') : t(`Nenhum destino em ${selectedFilter} no momento`, `No destinations in ${t(selectedFilter)} at the moment`)}
             </h3>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>Em breve adicionaremos novos destinos incríveis aqui.</p>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>{t("Em breve adicionaremos novos destinos incríveis aqui.", "We will add new amazing destinations here soon.")}</p>
             {selectedFilter !== 'Todos' && (
               <button className="filter-pill-btn active" onClick={() => setSelectedFilter('Todos')} style={{ margin: '0 auto' }}>
-                Ver todos os destinos
+                {t("Ver todos os destinos", "View all destinations")}
               </button>
             )}
           </div>
@@ -128,15 +136,15 @@ export default function Destinos() {
                   onClick={() => setActiveDestination(dest)}
                 >
                   <div className="card-image-wrapper">
-                    <img src={dest.image} alt={dest.title} className="card-image" />
+                    <img src={dest.image} alt={t(dest.title)} className="card-image" />
                   </div>
                   <div className="card-content">
-                    <span className="card-country">{dest.country}</span>
-                    <h3 className="card-title">{dest.title}</h3>
-                    <p className="card-desc">{dest.description}</p>
+                    <span className="card-country">{t(dest.country)}</span>
+                    <h3 className="card-title">{t(dest.title)}</h3>
+                    <p className="card-desc">{t(dest.description)}</p>
                     
                     <button className="card-saiba-mais-btn">
-                      <span>SAIBA MAIS</span>
+                      <span>{t("SAIBA MAIS", "LEARN MORE")}</span>
                       <ArrowRight size={14} style={{ marginLeft: '6px' }} />
                     </button>
                   </div>
@@ -151,7 +159,7 @@ export default function Destinos() {
       <div className="container text-center text-cta-wrapper">
         <button onClick={() => openWhatsApp()} className="btn btn-whatsapp-premium btn-large">
           <img src={whatsappIcon} alt="WhatsApp" className="cta-whatsapp-icon" style={{ width: '20px', height: '20px', marginRight: '10px', objectFit: 'contain' }} />
-          <span>Fale com um especialista</span>
+          <span>{t("Fale com um especialista", "Talk to an expert")}</span>
         </button>
       </div>
 
@@ -166,13 +174,13 @@ export default function Destinos() {
               </svg>
             </div>
             <div>
-              <h3>Não encontrou o destino que procura?</h3>
-              <p>Montamos roteiros personalizados para lugares incríveis ao redor do mundo.</p>
+              <h3>{t("Não encontrou o destino que procura?", "Didn't find the destination you're looking for?")}</h3>
+              <p>{t("Montamos roteiros personalizados para lugares incríveis ao redor do mundo.", "We build custom itineraries for amazing places around the world.")}</p>
             </div>
           </div>
           <button onClick={() => openWhatsApp("Roteiro Personalizado")} className="btn btn-outline-gold-whatsapp">
             <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon-gold-btn" style={{ width: '18px', height: '18px', marginRight: '8px', objectFit: 'contain' }} />
-            <span>Fale no WhatsApp</span>
+            <span>{t("Fale no WhatsApp", "Chat on WhatsApp")}</span>
           </button>
         </div>
       </section>
@@ -183,29 +191,29 @@ export default function Destinos() {
           <div className="usp-bar-item">
             <UserCheck size={20} className="usp-bar-icon" />
             <div>
-              <strong>Atendimento personalizado</strong>
-              <p>Cuidamos de cada detalhe da sua viagem do início ao fim.</p>
+              <strong>{t("Atendimento personalizado", "Personalized service")}</strong>
+              <p>{t("Cuidamos de cada detalhe da sua viagem do início ao fim.", "We take care of every detail of your trip from start to finish.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
             <Compass size={20} className="usp-bar-icon" />
             <div>
-              <strong>Experiências autênticas</strong>
-              <p>Vivencie o destino de forma única e verdadeira.</p>
+              <strong>{t("Experiências autênticas", "Authentic experiences")}</strong>
+              <p>{t("Vivencie o destino de forma única e verdadeira.", "Experience the destination in a unique and true way.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
             <Heart size={20} className="usp-bar-icon" />
             <div>
-              <strong>Parcerias de confiança</strong>
-              <p>Trabalhamos com os melhores fornecedores locais.</p>
+              <strong>{t("Parcerias de confiança", "Trusted partnerships")}</strong>
+              <p>{t("Trabalhamos com os melhores fornecedores locais.", "We work with the best local suppliers.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
             <Shield size={20} className="usp-bar-icon" />
             <div>
-              <strong>Suporte completo</strong>
-              <p>Estamos com você antes, durante e depois da viagem.</p>
+              <strong>{t("Suporte completo", "Complete support")}</strong>
+              <p>{t("Estamos com você antes, durante e depois da viagem.", "We are with you before, during, and after the trip.")}</p>
             </div>
           </div>
         </div>
@@ -223,12 +231,12 @@ export default function Destinos() {
               {/* Imagem Superior */}
               <div className="modal-header-image" style={{ backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.75)), url(${activeDestination.image})` }}>
                 <div className="modal-header-text">
-                  <span className="modal-badge-country">{activeDestination.country}</span>
-                  <h2>{activeDestination.title}</h2>
+                  <span className="modal-badge-country">{t(activeDestination.country)}</span>
+                  <h2>{t(activeDestination.title)}</h2>
                   <div className="modal-quick-meta" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     {activeDestination.tags && activeDestination.tags.map((tag, i) => (
                       <span key={i} className="route-chip" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.3)' }}>
-                        {tag}
+                        {t(tag)}
                       </span>
                     ))}
                   </div>
@@ -238,17 +246,17 @@ export default function Destinos() {
               {/* Informações detalhadas */}
               <div className="modal-inner-content">
                 <div className="modal-details-left">
-                  <h3>Sobre o Destino</h3>
-                  <p className="modal-description">{activeDestination.description}</p>
+                  <h3>{t("Sobre o Destino", "About the Destination")}</h3>
+                  <p className="modal-description">{t(activeDestination.description)}</p>
 
                   {activeDestination.highlights && activeDestination.highlights.length > 0 && (
                     <>
-                      <h3 style={{ marginTop: '28px' }}>Destaques e Experiências</h3>
+                      <h3 style={{ marginTop: '28px' }}>{t("Destaques e Experiências", "Highlights & Experiences")}</h3>
                       <div className="modal-route-chips" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
                         {activeDestination.highlights.map((highlight, idx) => (
                           <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-primary-gold)', flexShrink: 0 }}></div>
-                            <span style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)' }}>{highlight}</span>
+                            <span style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)' }}>{t(highlight)}</span>
                           </div>
                         ))}
                       </div>
@@ -258,17 +266,20 @@ export default function Destinos() {
 
                 <div className="modal-details-sidebar">
                   <div className="sidebar-box-gold">
-                    <h4>Planeje sua Viagem</h4>
+                    <h4>{t("Planeje sua Viagem", "Plan your Trip")}</h4>
                     <p className="sidebar-price-info" style={{ fontSize: '0.9rem', marginBottom: '20px', color: 'var(--color-dark-green-dark)' }}>
-                      Esse é um de nossos destinos exclusivos. Podemos criar um roteiro sob medida para você ou incluir você em nossos próximos grupos.
+                      {t(
+                        "Esse é um de nossos destinos exclusivos. Podemos criar um roteiro sob medida para você ou incluir você em nossos próximos grupos.",
+                        "This is one of our exclusive destinations. We can create a tailor-made itinerary for you or include you in our next groups."
+                      )}
                     </p>
                     
                     <button 
-                      onClick={() => openWhatsApp(activeDestination.title)} 
+                      onClick={() => openWhatsApp(t(activeDestination.title))} 
                       className="btn btn-primary w-full btn-sidebar-cta"
                       style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                     >
-                      <span>Personalizar Roteiro</span>
+                      <span>{t("Personalizar Roteiro", "Customize Itinerary")}</span>
                       <ArrowRight size={16} style={{ marginLeft: '8px' }} />
                     </button>
                   </div>

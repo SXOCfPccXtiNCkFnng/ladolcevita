@@ -5,12 +5,34 @@ import whatsappIcon from '../assets/whatsapp.png';
 import costaAmalfitana from '../assets/costa_amalfitana.png';
 
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProximasViagens() {
   const { settings } = useSettings();
+  const { t, language } = useLanguage();
+  
   const monthOrder = {
     "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4, "Maio": 5, "Junho": 6,
     "Julho": 7, "Agosto": 8, "Setembro": 9, "Outubro": 10, "Novembro": 11, "Dezembro": 12
+  };
+
+  const monthTranslations = {
+    "Janeiro": "January", "Fevereiro": "February", "Março": "March", "Abril": "April",
+    "Maio": "May", "Junho": "June", "Julho": "July", "Agosto": "August",
+    "Setembro": "September", "Outubro": "October", "Novembro": "November", "Dezembro": "December"
+  };
+
+  const translateDate = (dateStr) => {
+    if (!dateStr) return "";
+    if (language === 'pt') return dateStr;
+    const parts = dateStr.split(" ");
+    if (parts.length >= 3) {
+      const monthPt = parts[0];
+      const year = parts[2];
+      const monthEn = monthTranslations[monthPt] || monthPt;
+      return `${monthEn} ${year}`;
+    }
+    return dateStr;
   };
 
   const { trips } = useTrips();
@@ -32,9 +54,15 @@ export default function ProximasViagens() {
   const openWhatsApp = (trip) => {
     let text = "";
     if (trip.status === "Esgotado") {
-      text = `Olá! Gostaria de entrar na lista de espera para o grupo de "${trip.title}" (${trip.date}) com a La Dolce Vita.`;
+      text = t(
+        `Olá! Gostaria de entrar na lista de espera para o grupo de "${trip.title}" (${trip.date}) com a La Dolce Vita.`,
+        `Hello! I would like to join the waiting list for the "${t(trip.title)}" group (${translateDate(trip.date)}) with La Dolce Vita.`
+      );
     } else {
-      text = `Olá! Tenho interesse em reservar minha vaga no grupo de "${trip.title}" para ${trip.date}. Como posso proceder?`;
+      text = t(
+        `Olá! Tenho interesse em reservar minha vaga no grupo de "${trip.title}" para ${trip.date}. Como posso proceder?`,
+        `Hello! I am interested in reserving my spot in the "${t(trip.title)}" group for ${translateDate(trip.date)}. How should I proceed?`
+      );
     }
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -44,9 +72,9 @@ export default function ProximasViagens() {
       {/* 1. HERO HEADER BANNER */}
       <section className="viagens-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(26, 38, 29, 0.7) 0%, rgba(26, 38, 29, 0.82) 100%), url(${costaAmalfitana})` }}>
         <div className="container viagens-hero-content text-center">
-          <span className="hero-tag-gold">Experiências Compartilhadas</span>
-          <h1>Próximas Viagens</h1>
-          <p>Roteiros exclusivos e curados em pequenos grupos de afinidade. Junte-se a nós em saídas confirmadas para os destinos mais fascinantes.</p>
+          <span className="hero-tag-gold">{t("Experiências Compartilhadas", "Shared Experiences")}</span>
+          <h1>{t("Próximas Viagens", "Upcoming Trips")}</h1>
+          <p>{t("Roteiros exclusivos e curados em pequenos grupos de afinidade. Junte-se a nós em saídas confirmadas para os destinos mais fascinantes.", "Exclusive and curated itineraries in small affinity groups. Join us on confirmed departures to the most fascinating destinations.")}</p>
         </div>
         
         {/* Divisor em Arco Romano */}
@@ -60,14 +88,16 @@ export default function ProximasViagens() {
       {/* 2. CRONOGRAMA DE SAÍDAS */}
       <section className="timeline-section container">
         <div className="timeline-intro text-center reveal">
-          <h2>Calendário de Saídas Confirmadas</h2>
-          <p>Encontros sob medida com toda a logística de luxo, hospedagem charmosa e passeios privativos inclusos.</p>
+          <h2>{t("Calendário de Saídas Confirmadas", "Confirmed Departures Calendar")}</h2>
+          <p>{t("Encontros sob medida com toda a logística de luxo, hospedagem charmosa e passeios privativos inclusos.", "Tailor-made gatherings with all luxury logistics, charming lodging, and private tours included.")}</p>
         </div>
 
         <div className="timeline-list">
           {sortedTrips.map((trip) => {
-            const [month, , year] = trip.date.split(" ");
-            const shortMonth = month.substring(0, 3).toUpperCase();
+            const dateStr = trip.date || "";
+            const [month, , year] = dateStr.split(" ");
+            const translatedMonth = monthTranslations[month] || month;
+            const shortMonth = translatedMonth.substring(0, 3).toUpperCase();
             
             // Definição de cores e porcentagem das vagas preenchidas
             const spotsBooked = trip.spotsTotal - trip.spotsLeft;
@@ -75,16 +105,16 @@ export default function ProximasViagens() {
             
             let statusIcon = <CheckCircle size={16} className="text-green" />;
             let statusClass = "status-aberto";
-            let statusText = "Inscrições Abertas";
+            let statusText = t("Inscrições Abertas", "Registration Open");
 
             if (trip.status === "Esgotado") {
               statusIcon = <XCircle size={16} className="text-muted" />;
               statusClass = "status-esgotado";
-              statusText = "Grupo Esgotado";
+              statusText = t("Grupo Esgotado", "Group Sold Out");
             } else if (trip.status === "Vagas Limitadas" || trip.spotsLeft <= 3) {
               statusIcon = <AlertCircle size={16} className="text-red" />;
               statusClass = "status-limitado";
-              statusText = "Últimas Vagas!";
+              statusText = t("Últimas Vagas!", "Last Spots!");
             }
 
             const delayClass = `reveal-delay-${(sortedTrips.indexOf(trip) % 3) + 1}`;
@@ -100,31 +130,31 @@ export default function ProximasViagens() {
                 {/* Coluna 2: Card de Informações */}
                 <div className="card-column glass-card">
                   <div className="trip-img-wrapper">
-                    <img src={trip.image} alt={trip.title} className="trip-thumb-img" />
-                    {trip.status === "Esgotado" && <span className="badge-esgotado-overlay">Esgotado</span>}
+                    <img src={trip.image} alt={t(trip.title)} className="trip-thumb-img" />
+                    {trip.status === "Esgotado" && <span className="badge-esgotado-overlay">{t("Esgotado", "Sold Out")}</span>}
                   </div>
                   
                   <div className="trip-details-content">
-                    <span className="trip-country-tag">{trip.country}</span>
-                    <h3>{trip.title}</h3>
-                    <p className="trip-summary-desc">{trip.description}</p>
+                    <span className="trip-country-tag">{t(trip.country)}</span>
+                    <h3>{t(trip.title)}</h3>
+                    <p className="trip-summary-desc">{t(trip.description)}</p>
                     
                     <div className="trip-meta-info-grid">
                       <div className="meta-info-item">
                         <Clock size={16} className="meta-icon" />
-                        <span>{trip.duration}</span>
+                        <span>{t(trip.duration)}</span>
                       </div>
                       <div className="meta-info-item">
                         <MapPin size={16} className="meta-icon" />
-                        <span>Partindo de {trip.departure}</span>
+                        <span>{t("Partindo de", "Departing from")} {t(trip.departure)}</span>
                       </div>
                     </div>
 
                     <div className="trip-route-chips-row">
                       {trip.route.slice(0, 4).map((city, idx) => (
-                        <span key={idx} className="timeline-route-chip">{city}</span>
+                        <span key={idx} className="timeline-route-chip">{t(city)}</span>
                       ))}
-                      {trip.route.length > 4 && <span className="timeline-route-chip-more">+{trip.route.length - 4} mais</span>}
+                      {trip.route.length > 4 && <span className="timeline-route-chip-more">+{trip.route.length - 4} {t("mais", "more")}</span>}
                     </div>
                   </div>
                 </div>
@@ -132,9 +162,9 @@ export default function ProximasViagens() {
                 {/* Coluna 3: Indicador de Vagas e Ação */}
                 <div className="action-column glass-card">
                   <div className="price-box">
-                    <span className="price-label">Valor do Roteiro</span>
-                    <span className="price-value">{trip.price}</span>
-                    <span className="price-sub">Por pessoa em quarto duplo</span>
+                    <span className="price-label">{t("Valor do Roteiro", "Itinerary Value")}</span>
+                    <span className="price-value">{t(trip.price)}</span>
+                    <span className="price-sub">{t("Por pessoa em quarto duplo", "Per person in double room")}</span>
                   </div>
 
                   {/* Barra de Progresso de Vagas */}
@@ -145,7 +175,7 @@ export default function ProximasViagens() {
                         <span className={`status-badge-text ${statusClass}`}>{statusText}</span>
                       </div>
                       <span className="spots-counter">
-                        {trip.status === "Esgotado" ? "Sem vagas" : `${trip.spotsLeft} de ${trip.spotsTotal} livres`}
+                        {trip.status === "Esgotado" ? t("Sem vagas", "No spots") : t(`${trip.spotsLeft} de ${trip.spotsTotal} livres`, `${trip.spotsLeft} of ${trip.spotsTotal} free`)}
                       </span>
                     </div>
                     <div className="spots-progress-container">
@@ -161,7 +191,7 @@ export default function ProximasViagens() {
                     className={`btn btn-timeline-cta ${trip.status === "Esgotado" ? "btn-espera" : "btn-reserva"}`}
                   >
                     <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-timeline-icon" />
-                    <span>{trip.status === "Esgotado" ? "Lista de Espera" : "Quero Participar"}</span>
+                    <span>{trip.status === "Esgotado" ? t("Lista de Espera", "Waiting List") : t("Quero Participar", "I Want to Join")}</span>
                     <ArrowRight size={16} style={{ marginLeft: '8px' }} />
                   </button>
                 </div>
@@ -175,24 +205,24 @@ export default function ProximasViagens() {
       <section className="group-benefits-section reveal">
         <div className="container">
           <div className="text-center section-header">
-            <span className="section-tag">Diferenciais</span>
-            <h2 className="section-title">Como funcionam nossos grupos</h2>
+            <span className="section-tag">{t("Diferenciais", "Benefits")}</span>
+            <h2 className="section-title">{t("Como funcionam nossos grupos", "How our groups work")}</h2>
           </div>
           <div className="benefits-grid">
             <div className="benefit-card reveal reveal-delay-1">
               <div className="benefit-icon-wrapper">01</div>
-              <h4>Grupos Reduzidos</h4>
-              <p>Limitamos as saídas a no máximo 10 a 12 pessoas. Isso garante atenção total do guia, flexibilidade nos passeios e maior proximidade.</p>
+              <h4>{t("Grupos Reduzidos", "Small Groups")}</h4>
+              <p>{t("Limitamos as saídas a no máximo 10 a 12 pessoas. Isso garante atenção total do guia, flexibilidade nos passeios e maior proximidade.", "We limit departures to a maximum of 10 to 12 people. This guarantees total attention from the guide, flexibility in tours, and closer relationships.")}</p>
             </div>
             <div className="benefit-card reveal reveal-delay-2">
               <div className="benefit-icon-wrapper">02</div>
-              <h4>Hospedagem Charmosa</h4>
-              <p>Priorizamos hotéis boutique locais, vilas históricas e estalagens repletas de história que oferecem charme e conforto no lugar de redes de hotéis padronizadas.</p>
+              <h4>{t("Hospedagem Charmosa", "Charming Lodging")}</h4>
+              <p>{t("Priorizamos hotéis boutique locais, vilas históricas e estalagens repletas de história que oferecem charme e conforto no lugar de redes de hotéis padronizadas.", "We prioritize local boutique hotels, historic villas, and inns full of history that offer charm and comfort instead of standardized hotel chains.")}</p>
             </div>
             <div className="benefit-card reveal reveal-delay-3">
               <div className="benefit-icon-wrapper">03</div>
-              <h4>Experiências Fora do Roteiro</h4>
-              <p>Nossos guias locais abrem portas para vinícolas secretas, oficinas de artesãos locais e almoços em casas de família exclusivos do nosso grupo.</p>
+              <h4>{t("Experiências Fora do Roteiro", "Off-the-Beaten-Path Experiences")}</h4>
+              <p>{t("Nossos guias locais abrem portas para vinícolas secretas, oficinas de artesãos locais e almoços em casas de família exclusivos do nosso grupo.", "Our local guides open doors to secret wineries, local artisan workshops, and lunches in family homes exclusive to our group.")}</p>
             </div>
           </div>
         </div>

@@ -13,12 +13,14 @@ import sobreNosTable from '../assets/sobre_nos_table.png';
 import whatsappIcon from '../assets/whatsapp.png';
 
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 
 export default function Home({ setCurrentTab }) {
   const { settings } = useSettings();
   const { destinations } = useDestinations();
   const { testimonials } = useTestimonials();
+  const { t } = useLanguage();
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
@@ -80,21 +82,30 @@ export default function Home({ setCurrentTab }) {
   const heroSlides = [
     {
       image: heroTuscany,
-      tag: "Itália | Toscana",
-      title: "Roteiros que ficam na memória",
-      subtitle: "Descubra vilas medievais, vinhedos deslumbrantes e a autêntica culinária toscana em uma viagem sob medida."
+      tag: t("Itália | Toscana", "Italy | Tuscany"),
+      title: t("Roteiros que ficam na memória", "Itineraries that stay in memory"),
+      subtitle: t(
+        "Descubra vilas medievais, vinhedos deslumbrantes e a autêntica culinária toscana em uma viagem sob medida.",
+        "Discover medieval villages, stunning vineyards, and authentic Tuscan cuisine on a tailor-made trip."
+      )
     },
     {
       image: costaAmalfitana,
-      tag: "Costa Amalfitana",
-      title: "Cenários de tirar o fôlego",
-      subtitle: "Navegue por águas cristalinas, explore falésias coloridas e desfrute do charme do Mediterrâneo com exclusividade."
+      tag: t("Costa Amalfitana", "Amalfi Coast"),
+      title: t("Cenários de tirar o fôlego", "Breathtaking landscapes"),
+      subtitle: t(
+        "Navegue por águas cristalinas, explore falésias coloridas e desfrute do charme do Mediterrâneo com exclusividade.",
+        "Sail through crystal-clear waters, explore colorful cliffs and enjoy the charm of the Mediterranean with exclusivity."
+      )
     },
     {
       image: lagoDeComo,
-      tag: "Norte da Itália | Como",
-      title: "A Verdadeira La Dolce Vita",
-      subtitle: "Hospede-se em palácios históricos e sinta a sofisticação de um dos destinos mais elegantes do norte italiano."
+      tag: t("Norte da Itália | Como", "Northern Italy | Como"),
+      title: t("A Verdadeira La Dolce Vita", "The Real La Dolce Vita"),
+      subtitle: t(
+        "Hospede-se em palácios históricos e sinta a sofisticação de um dos destinos mais elegantes do norte italiano.",
+        "Stay in historic palaces and feel the sophistication of one of northern Italy's most elegant destinations."
+      )
     }
   ];
 
@@ -163,7 +174,7 @@ export default function Home({ setCurrentTab }) {
               
               <div className="hero-ctas-premium">
                 <button onClick={() => openWhatsApp(slide.title)} className="btn btn-primary hero-btn-gold">
-                  <span>Planejar Minha Viagem</span>
+                  <span>{t('btn.plan')}</span>
                   <ArrowRight size={16} style={{ marginLeft: '8px' }} />
                 </button>
               </div>
@@ -178,7 +189,7 @@ export default function Home({ setCurrentTab }) {
               key={index}
               className={`indicator-dot-premium ${index === activeSlide ? 'active' : ''}`}
               onClick={() => setActiveSlide(index)}
-              aria-label={`Ir para slide ${index + 1}`}
+              aria-label={t(`Ir para slide ${index + 1}`, `Go to slide ${index + 1}`)}
             />
           ))}
         </div>
@@ -199,32 +210,32 @@ export default function Home({ setCurrentTab }) {
               <div className="usp-icon-wrapper">
                 <UserCheck size={28} />
               </div>
-              <h3 className="usp-card-title">Atendimento Personalizado</h3>
-              <p className="usp-card-desc">Cuidamos de cada detalhe do planejamento à execução do seu roteiro.</p>
+              <h3 className="usp-card-title">{t("Atendimento Personalizado", "Personalized Service")}</h3>
+              <p className="usp-card-desc">{t("Cuidamos de cada detalhe do planejamento à execução do seu roteiro.", "We take care of every detail from planning to the execution of your itinerary.")}</p>
             </div>
 
             <div className="usp-card reveal reveal-delay-2">
               <div className="usp-icon-wrapper">
                 <Compass size={28} />
               </div>
-              <h3 className="usp-card-title">Experiências Autênticas</h3>
-              <p className="usp-card-desc">Vivencie o destino além do óbvio, conectando-se à cultura local.</p>
+              <h3 className="usp-card-title">{t("Experiências Autênticas", "Authentic Experiences")}</h3>
+              <p className="usp-card-desc">{t("Vivencie o destino além do óbvio, conectando-se à cultura local.", "Experience the destination beyond the obvious, connecting with the local culture.")}</p>
             </div>
 
             <div className="usp-card reveal reveal-delay-3">
               <div className="usp-icon-wrapper">
                 <Heart size={28} />
               </div>
-              <h3 className="usp-card-title">Parcerias de Confiança</h3>
-              <p className="usp-card-desc">Trabalhamos em conjunto com os melhores hotéis e guias locais.</p>
+              <h3 className="usp-card-title">{t("Parcerias de Confiança", "Trusted Partnerships")}</h3>
+              <p className="usp-card-desc">{t("Trabalhamos em conjunto com os melhores hotéis e guias locais.", "We work in partnership with the best hotels and local guides.")}</p>
             </div>
 
             <div className="usp-card reveal reveal-delay-3">
               <div className="usp-icon-wrapper">
                 <Shield size={28} />
               </div>
-              <h3 className="usp-card-title">Suporte Completo</h3>
-              <p className="usp-card-desc">Oferecemos suporte em tempo integral durante toda a sua viagem.</p>
+              <h3 className="usp-card-title">{t("Suporte Completo", "Complete Support")}</h3>
+              <p className="usp-card-desc">{t("Oferecemos suporte em tempo integral durante toda a sua viagem.", "We offer full-time support throughout your entire journey.")}</p>
             </div>
           </div>
         </div>
@@ -234,8 +245,8 @@ export default function Home({ setCurrentTab }) {
       <section className="destinations-section">
         <div className="container">
           <div className="section-header text-center reveal">
-            <span className="section-tag">Destinos em Destaque</span>
-            <h2 className="section-title">Lugares para se apaixonar</h2>
+            <span className="section-tag">{t("Destinos em Destaque", "Featured Destinations")}</span>
+            <h2 className="section-title">{t("Lugares para se apaixonar", "Places to fall in love with")}</h2>
           </div>
 
           <div className="destinations-grid">
@@ -243,18 +254,18 @@ export default function Home({ setCurrentTab }) {
               return (
                 <div key={dest.id} className={`destination-card reveal reveal-delay-${idx + 1}`}>
                   <div className="card-image-wrapper">
-                    <img src={dest.image} alt={dest.title} className="card-image" />
+                    <img src={dest.image} alt={t(dest.title)} className="card-image" />
                   </div>
                   <div className="card-content">
-                    <span className="card-country">{dest.country}</span>
-                    <h3 className="card-title">{dest.title}</h3>
-                    <p className="card-desc">{dest.description}</p>
+                    <span className="card-country">{t(dest.country)}</span>
+                    <h3 className="card-title">{t(dest.title)}</h3>
+                    <p className="card-desc">{t(dest.description)}</p>
 
                     <button 
-                      onClick={() => openWhatsApp(dest.title)} 
+                      onClick={() => openWhatsApp(t(dest.title))} 
                       className="btn btn-secondary card-btn"
                     >
-                      <span>Solicitar Roteiro</span>
+                      <span>{t('btn.requestItinerary')}</span>
                       <ArrowRight size={14} style={{ marginLeft: '6px' }} />
                     </button>
                   </div>
@@ -265,7 +276,7 @@ export default function Home({ setCurrentTab }) {
 
           <div className="text-center reveal" style={{ marginTop: '48px' }}>
             <button onClick={() => setCurrentTab('destinos')} className="btn btn-primary btn-with-icon">
-              <span>Ver todos os destinos</span>
+              <span>{t('btn.allDestinations')}</span>
               <ArrowRight size={16} style={{ marginLeft: '8px' }} />
             </button>
           </div>
@@ -277,25 +288,31 @@ export default function Home({ setCurrentTab }) {
         <div className="container">
           <div className="experience-wrapper">
             <div className="experience-text reveal">
-              <span className="section-tag">Viagens Feitas Para Você</span>
-              <h2 className="section-title">Mais que roteiros, vivências.</h2>
+              <span className="section-tag">{t("Viagens Feitas Para Você", "Trips Made For You")}</span>
+              <h2 className="section-title">{t("Mais que roteiros, vivências.", "More than itineraries, experiences.")}</h2>
               <p className="experience-desc">
-                Acreditamos que viajar é criar memórias que duram a vida inteira. Não vendemos apenas passagens ou hotéis, criamos uma imersão completa e luxuosa nos destinos mais belos do mundo.
+                {t(
+                  "Acreditamos que viajar é criar memórias que duram a vida inteira. Não vendemos apenas passagens ou hotéis, criamos uma imersão completa e luxuosa nos destinos mais belos do mundo.",
+                  "We believe that traveling is about creating memories that last a lifetime. We do not just sell tickets or hotels, we create a complete and luxurious immersion in the most beautiful destinations in the world."
+                )}
               </p>
               <p className="experience-desc">
-                Desfrute de almoços em vinhedos privativos na Toscana, navegue pelas águas cristalinas do Lago de Como, ou explore as vilas históricas de Portugal com o suporte de quem entende cada detalhe do destino.
+                {t(
+                  "Desfrute de almoços em vinhedos privativos na Toscana, navegue pelas águas cristalinas do Lago de Como, ou explore as vilas históricas de Portugal com o suporte de quem entende cada detalhe do destino.",
+                  "Enjoy lunches in private vineyards in Tuscany, sail through the crystal clear waters of Lake Como, or explore the historic villages of Portugal with the support of those who understand every detail of the destination."
+                )}
               </p>
               <button onClick={() => setCurrentTab('sobre-nos')} className="btn btn-secondary btn-with-icon" style={{ marginTop: '20px' }}>
-                <span>Saiba mais sobre nós</span>
+                <span>{t('btn.aboutUs')}</span>
                 <ArrowRight size={16} style={{ marginLeft: '8px' }} />
               </button>
             </div>
             <div className="experience-image-area reveal reveal-delay-2">
               <img src={sobreNosTable} alt="Jantar no vinhedo" className="experience-img" />
               <div className="experience-card-floating glass-card">
-                <span className="floating-tag">Gastronomia</span>
-                <h4 className="floating-title">Vinho & Alta Culinária</h4>
-                <p className="floating-desc">Roteiros gastronômicos exclusivos com visitas guiadas a vinícolas premiadas.</p>
+                <span className="floating-tag">{t("Gastronomia", "Gastronomy")}</span>
+                <h4 className="floating-title">{t("Vinho & Alta Culinária", "Wine & Haute Cuisine")}</h4>
+                <p className="floating-desc">{t("Roteiros gastronômicos exclusivos com visitas guiadas a vinícolas premiadas.", "Exclusive gastronomic itineraries with guided visits to award-winning wineries.")}</p>
               </div>
             </div>
           </div>
@@ -306,8 +323,8 @@ export default function Home({ setCurrentTab }) {
       <section className="testimonials-section">
         <div className="container">
           <div className="section-header text-center reveal">
-            <span className="section-tag">O que nossos viajantes dizem</span>
-            <h2 className="section-title">Histórias Reais</h2>
+            <span className="section-tag">{t("O que nossos viajantes dizem", "What our travelers say")}</span>
+            <h2 className="section-title">{t("Histórias Reais", "Real Stories")}</h2>
           </div>
 
           <div 
@@ -328,11 +345,11 @@ export default function Home({ setCurrentTab }) {
                 </div>
                 <blockquote className="testimonial-quote">
                   <span className="quote-mark-bg">“</span>
-                  <span className="quote-text">{testimonial.text}</span>
+                  <span className="quote-text">{t(testimonial.text)}</span>
                 </blockquote>
                 <div className="testimonial-author">
                   <h4 className="author-name">{testimonial.name}</h4>
-                  <span className="author-details">{testimonial.location} | Viagem: {testimonial.trip}</span>
+                  <span className="author-details">{t(testimonial.location)} | {t("Viagem", "Trip")}: {t(testimonial.trip)}</span>
                 </div>
               </div>
             ))}
@@ -343,7 +360,7 @@ export default function Home({ setCurrentTab }) {
                   key={index}
                   className={`test-dot ${index === activeTestimonial ? 'active' : ''}`}
                   onClick={() => setActiveTestimonial(index)}
-                  aria-label={`Depoimento ${index + 1}`}
+                  aria-label={`${t("Depoimento", "Testimonial")} ${index + 1}`}
                 />
               ))}
             </div>
@@ -356,11 +373,11 @@ export default function Home({ setCurrentTab }) {
         <div className="container">
           <div className="cta-bottom-card reveal">
             <div className="cta-bottom-text">
-              <h2 className="cta-title">Vamos planejar sua próxima viagem?</h2>
-              <p className="cta-desc">Fale agora mesmo com um de nossos especialistas em viagens personalizadas e comece a desenhar o seu roteiro perfeito.</p>
+              <h2 className="cta-title">{t("Vamos planejar sua próxima viagem?", "Shall we plan your next trip?")}</h2>
+              <p className="cta-desc">{t("Fale agora mesmo com um de nossos especialistas em viagens personalizadas e comece a desenhar o seu roteiro perfeito.", "Talk right now with one of our custom travel specialists and start designing your perfect itinerary.")}</p>
               <button onClick={() => openWhatsApp()} className="btn btn-whatsapp-premium btn-large">
                 <img src={whatsappIcon} alt="WhatsApp" className="cta-whatsapp-icon" style={{ width: '22px', height: '22px', marginRight: '10px', objectFit: 'contain' }} />
-                <span>Conversar com especialista</span>
+                <span>{t("Conversar com especialista", "Chat with a specialist")}</span>
               </button>
             </div>
             <div className="cta-bottom-gallery">

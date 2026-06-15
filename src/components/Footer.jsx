@@ -3,9 +3,11 @@ import { Mail, Clock } from 'lucide-react';
 import logo from '../assets/logo.png';
 import whatsappIcon from '../assets/whatsapp.png';
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer({ currentTab, setCurrentTab }) {
   const { settings } = useSettings();
+  const { t } = useLanguage();
 
   const lastClickRef = useRef(0);
 
@@ -20,7 +22,10 @@ export default function Footer({ currentTab, setCurrentTab }) {
   };
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent("Olá! Gostaria de conversar com um especialista da La Dolce Vita.");
+    const message = encodeURIComponent(t(
+      "Olá! Gostaria de conversar com um especialista da La Dolce Vita.",
+      "Hello! I would like to talk to a La Dolce Vita specialist."
+    ));
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${message}`, '_blank');
   };
 
@@ -33,10 +38,10 @@ export default function Footer({ currentTab, setCurrentTab }) {
             <img src={logo} alt="La Dolce Vita" className="footer-logo-img" />
           </div>
           <p className="branding-text">
-            Criamos viagens inesquecíveis com atenção a cada detalhe para você aproveitar o melhor de cada destino de forma autêntica e luxuosa.
+            {t('footer.branding')}
           </p>
           <p className="partnership-text" style={{ fontSize: '0.82rem', color: 'rgba(250, 248, 245, 0.45)', margin: '-16px 0 24px 0', lineHeight: '1.5' }}>
-            Operado em parceria com a <a href="https://www.instagram.com/capturviagens/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-gold)', textDecoration: 'underline', transition: 'var(--transition-fast)' }} className="partner-link">Captur Viagens</a>.
+            {t('footer.partner')} <a href="https://www.instagram.com/capturviagens/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-gold)', textDecoration: 'underline', transition: 'var(--transition-fast)' }} className="partner-link">Captur Viagens</a>.
           </p>
           <div className="social-icons">
             <a href={settings.instagram || "https://www.instagram.com/ladolcevitaviagens/"} target="_blank" rel="noreferrer" className="social-link" aria-label="Instagram">
@@ -50,12 +55,12 @@ export default function Footer({ currentTab, setCurrentTab }) {
 
         {/* Coluna 2: Contato */}
         <div className="footer-col contacts">
-          <h4 className="footer-title">Fale Conosco</h4>
+          <h4 className="footer-title">{t('footer.title')}</h4>
           <ul className="contact-list">
             <li>
               <button onClick={openWhatsApp} className="contact-item-btn">
                 <img src={whatsappIcon} alt="WhatsApp" className="footer-whatsapp-icon" />
-                <span>Fale no WhatsApp</span>
+                <span>{t('footer.whatsapp')}</span>
               </button>
             </li>
             <li>
@@ -66,7 +71,7 @@ export default function Footer({ currentTab, setCurrentTab }) {
             </li>
             <li className="contact-item">
               <Clock size={16} className="contact-icon" />
-              <span>{settings.hours || 'Seg - Sex: 09h às 18h'}</span>
+              <span>{t(settings.hours || 'Seg - Sex: 09h às 18h', 'Mon - Fri: 9am to 6pm')}</span>
             </li>
           </ul>
         </div>
@@ -79,7 +84,7 @@ export default function Footer({ currentTab, setCurrentTab }) {
             className="copyright" 
             onClick={handleCopyrightClick}
           >
-            © {new Date().getFullYear()} La Dolce Vita. Todos os direitos reservados. | Desenvolvido por <a href="https://domutech.digital/" target="_blank" rel="noopener noreferrer" className="credit-link">Alan Felipe</a>
+            © {new Date().getFullYear()} La Dolce Vita. {t('footer.copyright')} | {t('footer.developer')} <a href="https://domutech.digital/" target="_blank" rel="noopener noreferrer" className="credit-link">Alan Felipe</a>
           </span>
         </div>
       </div>

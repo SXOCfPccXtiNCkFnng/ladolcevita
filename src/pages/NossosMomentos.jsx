@@ -5,9 +5,11 @@ import whatsappIcon from '../assets/whatsapp.png';
 import pugliaDestination from '../assets/puglia_destination.png';
 
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function NossosMomentos() {
   const { settings } = useSettings();
+  const { t } = useLanguage();
   const [selectedFilter, setSelectedFilter] = useState('Todos'); // 'Todos' | 'Itália' | 'Portugal' | 'Experiências'
   const [activeMedia, setActiveMedia] = useState(null); // Para o lightbox modal
 
@@ -20,7 +22,10 @@ export default function NossosMomentos() {
   });
 
   const openWhatsApp = () => {
-    const text = encodeURIComponent("Olá! Vi a galeria de 'Nossos Momentos' no site da La Dolce Vita e gostaria de planejar minha viagem.");
+    const text = encodeURIComponent(t(
+      "Olá! Vi a galeria de 'Nossos Momentos' no site da La Dolce Vita e gostaria de planejar minha viagem.",
+      "Hello! I saw the 'Our Moments' gallery on the La Dolce Vita website and would like to plan my trip."
+    ));
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${text}`, '_blank');
   };
 
@@ -29,9 +34,9 @@ export default function NossosMomentos() {
       {/* 1. HERO HEADER BANNER */}
       <section className="momentos-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(26, 38, 29, 0.7) 0%, rgba(26, 38, 29, 0.85) 100%), url(${pugliaDestination})` }}>
         <div className="container momentos-hero-content text-center">
-          <span className="hero-tag-gold">Registros Reais</span>
-          <h1>Nossos Momentos</h1>
-          <p>Instantes de risadas compartilhadas, brindes ao entardecer e memórias esculpidas em nossas saídas exclusivas.</p>
+          <span className="hero-tag-gold">{t("Registros Reais", "Real Records")}</span>
+          <h1>{t("Nossos Momentos", "Our Moments")}</h1>
+          <p>{t("Instantes de risadas compartilhadas, brindes ao entardecer e memórias esculpidas em nossas saídas exclusivas.", "Instants of shared laughter, toasts at sunset, and memories sculpted in our exclusive departures.")}</p>
         </div>
 
         {/* Divisor de onda orgânica suave */}
@@ -51,7 +56,7 @@ export default function NossosMomentos() {
               className={`filter-pill-btn ${selectedFilter === filter ? 'active' : ''}`}
               onClick={() => setSelectedFilter(filter)}
             >
-              {filter === 'Todos' ? 'Todos os momentos' : filter}
+              {filter === 'Todos' ? t('Todos os momentos', 'All moments') : t(filter)}
             </button>
           ))}
         </div>
@@ -62,13 +67,13 @@ export default function NossosMomentos() {
         {momentsLoading ? (
           <div className="no-results text-center" style={{ padding: '60px 0' }}>
             <RefreshCw size={32} style={{ color: 'var(--color-primary-gold)', animation: 'spin-filter 2s linear infinite', marginBottom: '16px' }} />
-            <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>Carregando momentos...</p>
+            <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>{t("Carregando momentos...", "Loading moments...")}</p>
             <style>{`@keyframes spin-filter { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }`}</style>
           </div>
         ) : filteredMoments.length === 0 ? (
           <div className="no-results text-center">
-            <h3>Nenhuma lembrança registrada nesta categoria</h3>
-            <p>Em breve adicionaremos novos registros exclusivos dos nossos grupos.</p>
+            <h3>{t("Nenhuma lembrança registrada nesta categoria", "No memories recorded in this category")}</h3>
+            <p>{t("Em breve adicionaremos novos registros exclusivos dos nossos grupos.", "We will soon add new exclusive records from our groups.")}</p>
           </div>
         ) : (
           <div className="gallery-grid">
@@ -81,7 +86,7 @@ export default function NossosMomentos() {
                   onClick={() => setActiveMedia(moment)}
                 >
                   <div className="gallery-img-wrapper">
-                    <img src={moment.image} alt={moment.title} className="gallery-img" />
+                    <img src={moment.image} alt={t(moment.title)} className="gallery-img" />
                     
                     {/* Indicador de Tipo (Foto/Vídeo) */}
                     <span className="media-type-badge">
@@ -102,11 +107,11 @@ export default function NossosMomentos() {
                       <div className="hover-content">
                         {moment.location && (
                           <span className="hover-location">
-                            <MapPin size={12} style={{ marginRight: '4px' }} /> {moment.location}
+                            <MapPin size={12} style={{ marginRight: '4px' }} /> {t(moment.location)}
                           </span>
                         )}
-                        {moment.title && <h3>{moment.title}</h3>}
-                        {moment.date && <p>{moment.date}</p>}
+                        {moment.title && <h3>{t(moment.title)}</h3>}
+                        {moment.date && <p>{t(moment.date)}</p>}
                       </div>
                     </div>
                   </div>
@@ -121,12 +126,12 @@ export default function NossosMomentos() {
       <section className="container cta-section-wrapper reveal">
         <div className="moments-cta-card">
           <div className="cta-content-left">
-            <h2>Quer escrever o seu próprio capítulo conosco?</h2>
-            <p>Junte-se a nós em nossas próximas saídas exclusivas e viva experiências que ficarão para sempre em sua memória.</p>
+            <h2>{t("Quer escrever o seu próprio capítulo conosco?", "Want to write your own chapter with us?")}</h2>
+            <p>{t("Junte-se a nós em nossas próximas saídas exclusivas e viva experiências que ficarão para sempre em sua memória.", "Join us on our next exclusive departures and live experiences that will stay forever in your memory.")}</p>
           </div>
           <button onClick={openWhatsApp} className="btn btn-whatsapp-premium btn-large">
             <img src={whatsappIcon} alt="WhatsApp" className="cta-whatsapp-icon" style={{ width: '20px', height: '20px', marginRight: '10px', objectFit: 'contain' }} />
-            <span>Planejar Minha Viagem</span>
+            <span>{t('btn.plan')}</span>
           </button>
         </div>
       </section>
@@ -150,38 +155,38 @@ export default function NossosMomentos() {
                     playsInline
                   />
                 ) : (
-                  <img src={activeMedia.image} alt={activeMedia.title} className="lightbox-img" />
+                  <img src={activeMedia.image} alt={t(activeMedia.title)} className="lightbox-img" />
                 )}
               </div>
 
               <div className="lightbox-sidebar">
                 <div className="sidebar-meta-row">
-                  <span className="sidebar-category-tag">{activeMedia.category}</span>
+                  <span className="sidebar-category-tag">{t(activeMedia.category)}</span>
                   {activeMedia.date && (
                     <span className="sidebar-date">
-                      <Calendar size={14} style={{ marginRight: '6px' }} /> {activeMedia.date}
+                      <Calendar size={14} style={{ marginRight: '6px' }} /> {t(activeMedia.date)}
                     </span>
                   )}
                 </div>
-                {activeMedia.title && <h2>{activeMedia.title}</h2>}
+                {activeMedia.title && <h2>{t(activeMedia.title)}</h2>}
                 {activeMedia.location && (
                   <p className="sidebar-location-text">
-                    <MapPin size={16} style={{ color: 'var(--color-primary-gold-dark)', marginRight: '6px' }} /> {activeMedia.location}
+                    <MapPin size={16} style={{ color: 'var(--color-primary-gold-dark)', marginRight: '6px' }} /> {t(activeMedia.location)}
                   </p>
                 )}
                 
                 {activeMedia.description && (
                   <>
                     <div className="divider-gold-fine"></div>
-                    <p className="sidebar-description">{activeMedia.description}</p>
+                    <p className="sidebar-description">{t(activeMedia.description)}</p>
                   </>
                 )}
 
                 <div className="sidebar-cta-box">
-                  <h4>Ficou com vontade de conhecer?</h4>
-                  <p>Consulte a disponibilidade de roteiros semelhantes para este destino.</p>
+                  <h4>{t("Ficou com vontade de conhecer?", "Inspired to experience this?")}</h4>
+                  <p>{t("Consulte a disponibilidade de roteiros semelhantes para este destino.", "Consult availability of similar itineraries for this destination.")}</p>
                   <button onClick={openWhatsApp} className="btn btn-whatsapp-premium w-full" style={{ width: '100%', marginTop: '16px' }}>
-                    <span>Falar no WhatsApp</span>
+                    <span>{t("Falar no WhatsApp", "Chat on WhatsApp")}</span>
                     <ArrowRight size={16} style={{ marginLeft: '8px' }} />
                   </button>
                 </div>

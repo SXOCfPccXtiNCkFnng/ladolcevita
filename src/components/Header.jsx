@@ -3,19 +3,22 @@ import { Menu, X } from 'lucide-react';
 import logo from '../assets/logo.png';
 import whatsappIcon from '../assets/whatsapp.png';
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageToggle from './LanguageToggle';
 
 export default function Header({ currentTab, setCurrentTab }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { settings } = useSettings();
+  const { t } = useLanguage();
 
   const navLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'destinos', label: 'Destinos' },
-    { id: 'sobre-nos', label: 'Sobre Nós' },
-    { id: 'proximas-viagens', label: 'Próximas Viagens' },
-    { id: 'nossos-momentos', label: 'Nossos Momentos' },
-    { id: 'contato', label: 'Contato' }
+    { id: 'home', label: t('nav.home') },
+    { id: 'destinos', label: t('nav.destinos') },
+    { id: 'sobre-nos', label: t('nav.sobre-nos') },
+    { id: 'proximas-viagens', label: t('nav.proximas-viagens') },
+    { id: 'nossos-momentos', label: t('nav.nossos-momentos') },
+    { id: 'contato', label: t('nav.contato') }
   ];
 
   // Efeito de rolagem para controle de transparência da Navbar
@@ -46,7 +49,10 @@ export default function Header({ currentTab, setCurrentTab }) {
   };
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent("Olá! Acessei o site da La Dolce Vita e gostaria de conversar com um especialista em viagens.");
+    const message = encodeURIComponent(t(
+      "Olá! Acessei o site da La Dolce Vita e gostaria de conversar com um especialista em viagens.",
+      "Hello! I accessed the La Dolce Vita website and would like to speak with a travel specialist."
+    ));
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${message}`, '_blank');
   };
 
@@ -76,9 +82,11 @@ export default function Header({ currentTab, setCurrentTab }) {
 
         {/* WhatsApp CTA button */}
         <div className="header-cta">
+          <LanguageToggle />
+
           <button onClick={openWhatsApp} className="btn header-whatsapp-btn">
             <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon-img" />
-            <span>Falar com Especialista</span>
+            <span>{t('nav.cta')}</span>
           </button>
           
           {/* Mobile menu trigger */}
@@ -106,13 +114,16 @@ export default function Header({ currentTab, setCurrentTab }) {
                 </button>
               </li>
             ))}
-            <li style={{ marginTop: '24px', padding: '0 24px' }}>
+            <li style={{ marginTop: '24px', padding: '0 24px', display: 'flex', justifyContent: 'center' }}>
+              <LanguageToggle />
+            </li>
+            <li style={{ marginTop: '16px', padding: '0 24px' }}>
               <button 
                 onClick={openWhatsApp} 
                 className="mobile-whatsapp-btn"
               >
                 <img src={whatsappIcon} alt="WhatsApp" className="whatsapp-icon-img" style={{ filter: 'brightness(0) invert(1)', width: '16px', height: '16px', marginRight: '0' }} />
-                <span>Falar com Especialista</span>
+                <span>{t('nav.cta')}</span>
               </button>
             </li>
           </ul>

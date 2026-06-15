@@ -8,14 +8,22 @@ import whatsappIcon from '../assets/whatsapp.png';
 import pugliaDestination from '../assets/puglia_destination.png';
 
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function SobreNos() {
   const { settings } = useSettings();
+  const { t } = useLanguage();
 
   const openWhatsApp = (context = "") => {
-    let message = "Olá! Gostaria de conversar com um especialista da La Dolce Vita.";
+    let message = t(
+      "Olá! Gostaria de conversar com um especialista da La Dolce Vita.",
+      "Hello! I would like to speak with a La Dolce Vita specialist."
+    );
     if (context) {
-      message = `Olá! Vi a seção de "${context}" no site da La Dolce Vita e gostaria de planejar meu roteiro.`;
+      message = t(
+        `Olá! Vi a seção de "${context}" no site da La Dolce Vita e gostaria de planejar meu roteiro.`,
+        `Hello! I saw the "${context}" section on the La Dolce Vita website and would like to plan my itinerary.`
+      );
     }
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -25,9 +33,9 @@ export default function SobreNos() {
       {/* 1. HERO HEADER BANNER (Editorial com imagem de fundo) */}
       <section className="sobre-nos-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(26, 38, 29, 0.7) 0%, rgba(26, 38, 29, 0.85) 100%), url(${pugliaDestination})` }}>
         <div className="container sobre-nos-hero-content text-center">
-          <span className="hero-tag-gold">Nossa Essência</span>
-          <h1>Sobre Nós</h1>
-          <p>Compartilhamos o que há de mais belo no mundo: lugares, culturas, sabores e histórias que ficam para sempre na memória.</p>
+          <span className="hero-tag-gold">{t("Nossa Essência", "Our Essence")}</span>
+          <h1>{t("Sobre Nós", "About Us")}</h1>
+          <p>{t("Compartilhamos o que há de mais belo no mundo: lugares, culturas, sabores e histórias que ficam para sempre na memória.", "We share what is most beautiful in the world: places, cultures, flavors, and stories that stay in memory forever.")}</p>
         </div>
         
         {/* Divisor de onda orgânica suave */}
@@ -41,15 +49,18 @@ export default function SobreNos() {
       {/* 2. CONTEÚDO (Story Intro Split) */}
       <section className="container hero-split-section reveal" style={{ marginTop: '50px' }}>
         <div className="hero-split-left">
-          <h2 className="hero-tagline">Somos apaixonados por viagens e por criar experiências que transformam.</h2>
+          <h2 className="hero-tagline">{t("Somos apaixonados por viagens e por criar experiências que transformam.", "We are passionate about travel and creating experiences that transform.")}</h2>
           
           <p className="hero-desc">
-            Acreditamos que cada viagem é única e deve refletir os sonhos e o estilo de cada viajante. Por isso, cuidamos de cada detalhe para que você viva momentos inesquecíveis com segurança e tranquilidade.
+            {t(
+              "Acreditamos que cada viagem é única e deve refletir os sonhos e o estilo de cada viajante. Por isso, cuidamos de cada detalhe para que você viva momentos inesquecíveis com segurança e tranquilidade.",
+              "We believe that each trip is unique and should reflect the dreams and style of each traveler. Therefore, we take care of every detail so that you live unforgettable moments with safety and peace of mind."
+            )}
           </p>
         </div>
         
         <div className="hero-split-right">
-          <img src={toscanaStreetVertical} alt="Rua medieval na Toscana" className="hero-vertical-img" />
+          <img src={toscanaStreetVertical} alt={t("Rua medieval na Toscana", "Medieval street in Tuscany")} className="hero-vertical-img" />
         </div>
       </section>
 
@@ -64,8 +75,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>Atendimento personalizado</strong>
-              <p>Cuidamos de cada detalhe da sua viagem do início ao fim.</p>
+              <strong>{t("Atendimento personalizado", "Personalized service")}</strong>
+              <p>{t("Cuidamos de cada detalhe da sua viagem do início ao fim.", "We take care of every detail of your trip from start to finish.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -77,8 +88,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>Experiências autênticas</strong>
-              <p>Vivencie o destino de forma única e verdadeira.</p>
+              <strong>{t("Experiências autênticas", "Authentic experiences")}</strong>
+              <p>{t("Vivencie o destino de forma única e verdadeira.", "Experience the destination in a unique and true way.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -88,8 +99,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>Parcerias de confiança</strong>
-              <p>Trabalhamos com os melhores fornecedores locais.</p>
+              <strong>{t("Parcerias de confiança", "Trusted partnerships")}</strong>
+              <p>{t("Trabalhamos com os melhores fornecedores locais.", "We work with the best local suppliers.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -100,8 +111,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>Suporte completo</strong>
-              <p>Estamos com você antes, durante e depois da viagem.</p>
+              <strong>{t("Suporte completo", "Complete support")}</strong>
+              <p>{t("Estamos com você antes, durante e depois da viagem.", "We are with you before, during, and after the trip.")}</p>
             </div>
           </div>
         </div>
@@ -110,21 +121,27 @@ export default function SobreNos() {
       {/* 3. HISTÓRIA & MÉTRICAS */}
       <section className="nossa-historia-section reveal">
         <div className="container text-center historia-content">
-          <span className="section-tag-small">NOSSA HISTÓRIA</span>
+          <span className="section-tag-small">{t("NOSSA HISTÓRIA", "OUR HISTORY")}</span>
           <div className="gold-diamond-divider center-align">
             <div className="divider-line"></div>
             <div className="divider-diamond">♦</div>
             <div className="divider-line"></div>
           </div>
           
-          <h2 className="editorial-title">Viajar é criar memórias para a vida toda</h2>
+          <h2 className="editorial-title">{t("Viajar é criar memórias para a vida toda", "To travel is to create memories for a lifetime")}</h2>
           
           <p className="editorial-p">
-            A La Dolce Vita nasceu do desejo de compartilhar o que há de mais belo no mundo: lugares, culturas, sabores e histórias que ficam para sempre na memória.
+            {t(
+              "A La Dolce Vita nasceu do desejo de compartilhar o que há de mais belo no mundo: lugares, culturas, sabores e histórias que ficam para sempre na memória.",
+              "La Dolce Vita was born from the desire to share what is most beautiful in the world: places, cultures, flavors, and stories that stay in memory forever."
+            )}
           </p>
           
           <p className="editorial-p">
-            Mais do que roteiros, entregamos vivências. Planejamos cada viagem com carinho, atenção e conhecimento para que você aproveite o melhor de cada destino com tranquilidade.
+            {t(
+              "Mais do que roteiros, entregamos vivências. Planejamos cada viagem com carinho, atenção e conhecimento para que você aproveite o melhor de cada destino com tranquilidade.",
+              "More than itineraries, we deliver experiences. We plan each trip with care, attention, and knowledge so that you can enjoy the best of each destination in peace."
+            )}
           </p>
 
           {/* Métricas */}
@@ -132,19 +149,19 @@ export default function SobreNos() {
             <div className="stat-card reveal reveal-delay-1">
               <div className="stat-icon-wrapper"><Globe size={24} /></div>
               <h3>+15</h3>
-              <p>destinos incríveis</p>
+              <p>{t("destinos incríveis", "incredible destinations")}</p>
             </div>
 
             <div className="stat-card reveal reveal-delay-2">
               <div className="stat-icon-wrapper"><Navigation size={24} /></div>
               <h3>+300</h3>
-              <p>viagens realizadas</p>
+              <p>{t("viagens realizadas", "completed trips")}</p>
             </div>
 
             <div className="stat-card reveal reveal-delay-3">
               <div className="stat-icon-wrapper"><Heart size={24} /></div>
               <h3>100%</h3>
-              <p>clientes satisfeitos</p>
+              <p>{t("clientes satisfeitos", "satisfied clients")}</p>
             </div>
           </div>
         </div>
@@ -154,26 +171,29 @@ export default function SobreNos() {
       <section className="nosso-proposito-section reveal">
         <div className="container proposito-wrapper">
           <div className="proposito-image">
-            <img src={sobreNosTable} alt="Jantar sob as videiras da Toscana" className="proposito-img-card" />
+            <img src={sobreNosTable} alt={t("Jantar sob as videiras da Toscana", "Dinner under the Tuscan grapevines")} className="proposito-img-card" />
           </div>
           
           <div className="proposito-text-block">
-            <span className="section-tag-small">NOSSO PROPÓSITO</span>
+            <span className="section-tag-small">{t("NOSSO PROPÓSITO", "OUR PURPOSE")}</span>
             <div className="gold-diamond-divider">
               <div className="divider-line"></div>
               <div className="divider-diamond">♦</div>
               <div className="divider-line"></div>
             </div>
             
-            <h2>Conectar pessoas ao que há de mais especial no mundo.</h2>
+            <h2>{t("Conectar pessoas ao que há de mais especial no mundo.", "Connect people to what is most special in the world.")}</h2>
             
             <p>
-              Nosso propósito é transformar viagens em experiências inesquecíveis, conectando pessoas à cultura, à natureza e à essência de cada lugar.
+              {t(
+                "Nosso propósito é transformar viagens em experiências inesquecíveis, conectando pessoas à cultura, à natureza e à essência de cada lugar.",
+                "Our purpose is to transform travel into unforgettable experiences, connecting people to the culture, nature, and essence of each place."
+              )}
             </p>
             
             <button onClick={() => openWhatsApp("Nosso Propósito")} className="btn btn-whatsapp-premium btn-large">
               <img src={whatsappIcon} alt="WhatsApp" className="cta-whatsapp-icon" style={{ width: '20px', height: '20px', marginRight: '10px', objectFit: 'contain' }} />
-              <span>Fale com um especialista</span>
+              <span>{t("Fale com um especialista", "Talk to an expert")}</span>
             </button>
           </div>
         </div>
@@ -182,37 +202,40 @@ export default function SobreNos() {
       {/* 5. QUEM ESTÁ POR TRÁS */}
       <section className="quem-somos-section reveal">
         <div className="container text-center">
-          <span className="section-tag-small">QUEM ESTÁ POR TRÁS</span>
+          <span className="section-tag-small">{t("QUEM ESTÁ POR TRÁS", "WHO IS BEHIND IT")}</span>
           <div className="gold-diamond-divider center-align">
             <div className="divider-line"></div>
             <div className="divider-diamond">♦</div>
             <div className="divider-line"></div>
           </div>
           
-          <h2 className="editorial-title">Uma equipe que ama o que faz</h2>
+          <h2 className="editorial-title">{t("Uma equipe que ama o que faz", "A team that loves what they do")}</h2>
           
           <p className="editorial-subtitle-max">
-            Somos especialistas em criar roteiros personalizados e proporcionar experiências únicas. Cada viagem planejada carrega o nosso compromisso com excelência e paixão por viajar.
+            {t(
+              "Somos especialistas em criar roteiros personalizados e proporcionar experiências únicas. Cada viagem planejada carrega o nosso compromisso com excelência e paixão por viajar.",
+              "We are specialists in creating custom itineraries and providing unique experiences. Every planned trip carries our commitment to excellence and passion for travel."
+            )}
           </p>
 
           {/* Cards de Valores */}
           <div className="values-three-col">
             <div className="value-item-box reveal reveal-delay-1">
               <div className="value-icon"><Plane size={24} /></div>
-              <h3>Conhecimento</h3>
-              <p>Especialistas com experiência nos destinos que oferecem.</p>
+              <h3>{t("Conhecimento", "Knowledge")}</h3>
+              <p>{t("Especialistas com experiência nos destinos que oferecem.", "Specialists with experience in the destinations they offer.")}</p>
             </div>
 
             <div className="value-item-box reveal reveal-delay-2">
               <div className="value-icon"><Heart size={24} /></div>
-              <h3>Paixão</h3>
-              <p>Amamos viajar e compartilhar o que há de melhor no mundo.</p>
+              <h3>{t("Paixão", "Passion")}</h3>
+              <p>{t("Amamos viajar e compartilhar o que há de melhor no mundo.", "We love traveling and sharing the best in the world.")}</p>
             </div>
 
             <div className="value-item-box reveal reveal-delay-3">
               <div className="value-icon"><Compass size={24} /></div>
-              <h3>Propósito</h3>
-              <p>Transformar sonhos de viagem em memórias inesquecíveis.</p>
+              <h3>{t("Propósito", "Purpose")}</h3>
+              <p>{t("Transformar sonhos de viagem em memórias inesquecíveis.", "Transform travel dreams into unforgettable memories.")}</p>
             </div>
           </div>
 
@@ -221,11 +244,14 @@ export default function SobreNos() {
             <div className="founder-avatar-circle">LDV</div>
             <div className="founder-quote-text">
               <blockquote className="founder-quote">
-                "Nosso compromisso é desenhar roteiros que fujam do óbvio. Queremos que você se sinta um convidado especial na Europa, seja degustando um vinho raro com o próprio produtor na Toscana ou navegando em um barco privativo no Lago de Como."
+                "{t(
+                  "Nosso compromisso é desenhar roteiros que fujam do óbvio. Queremos que você se sinta um convidado especial na Europa, seja degustando um vinho raro com o próprio produtor na Toscana ou navegando em um barco privativo no Lago de Como.",
+                  "Our commitment is to design itineraries that escape the obvious. We want you to feel like a special guest in Europe, whether tasting a rare wine with the producer in Tuscany or sailing a private boat on Lake Como."
+                )}"
               </blockquote>
               <cite className="founder-cite">
                 <strong>La Dolce Vita</strong>
-                <span>Curadores de Roteiros</span>
+                <span>{t("Curadores de Roteiros", "Itinerary Curators")}</span>
               </cite>
             </div>
           </div>
@@ -235,20 +261,23 @@ export default function SobreNos() {
       {/* 6. PARCERIA DE CONFIANÇA */}
       <section className="parceria-section reveal">
         <div className="container text-center">
-          <span className="section-tag-small">PARCEIRO OFICIAL</span>
+          <span className="section-tag-small">{t("PARCEIRO OFICIAL", "OFFICIAL PARTNER")}</span>
           <div className="gold-diamond-divider center-align">
             <div className="divider-line"></div>
             <div className="divider-diamond">♦</div>
             <div className="divider-line"></div>
           </div>
           
-          <h2 className="editorial-title" style={{ fontSize: '2.4rem', marginBottom: '16px' }}>Operação e Suporte de Confiança</h2>
+          <h2 className="editorial-title" style={{ fontSize: '2.4rem', marginBottom: '16px' }}>{t("Operação e Suporte de Confiança", "Trusted Operation & Support")}</h2>
           <p className="editorial-subtitle-max" style={{ marginBottom: '30px', maxWidth: '780px', margin: '0 auto 30px auto' }}>
-            Nossas viagens de grupo e serviços de consultoria são operados em parceria oficial com a <strong>Captur Viagens</strong>. Essa colaboração une a curadoria sofisticada da La Dolce Vita à robustez e segurança operacional de uma operadora registrada, garantindo tranquilidade total em cada etapa do seu roteiro.
+            {t(
+              "Nossas viagens de grupo e serviços de consultoria são operados em parceria oficial com a Captur Viagens. Essa colaboração une a curadoria sofisticada da La Dolce Vita à robustez e segurança operacional de uma operadora registrada, garantindo tranquilidade total em cada etapa do seu roteiro.",
+              "Our group trips and consulting services are operated in official partnership with Captur Viagens. This collaboration combines the sophisticated curation of La Dolce Vita with the operational strength and safety of a registered agency, ensuring complete peace of mind at each stage of your itinerary."
+            )}
           </p>
           
           <a href="https://www.instagram.com/capturviagens/" target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center' }}>
-            Conhecer a Captur Viagens no Instagram
+            {t("Conhecer a Captur Viagens no Instagram", "Discover Captur Viagens on Instagram")}
           </a>
         </div>
       </section>

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Mail, Phone, Clock, Send, MessageCircle } from 'lucide-react';
 import lagoDeComo from '../assets/lago_de_como.png';
 import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Contato() {
   const { settings } = useSettings();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,7 +28,10 @@ export default function Contato() {
   };
 
   const openWhatsApp = () => {
-    const text = encodeURIComponent("Olá! Gostaria de conversar com um especialista da La Dolce Vita.");
+    const text = encodeURIComponent(t(
+      "Olá! Gostaria de conversar com um especialista da La Dolce Vita.",
+      "Hello! I would like to speak with a La Dolce Vita specialist."
+    ));
     window.open(`https://wa.me/${settings.whatsapp || '5514999999999'}?text=${text}`, '_blank');
   };
 
@@ -35,9 +40,9 @@ export default function Contato() {
       {/* 1. HERO BANNER DE CONTATO */}
       <section className="contato-hero" style={{ backgroundImage: `linear-gradient(180deg, rgba(26, 38, 29, 0.7) 0%, rgba(26, 38, 29, 0.85) 100%), url(${lagoDeComo})` }}>
         <div className="container contato-hero-content text-center">
-          <span className="hero-tag-gold">Atendimento Sob Medida</span>
-          <h1 className="hero-title">Fale com um Especialista</h1>
-          <p className="hero-subtitle">Entre em contato para tirar dúvidas, receber orçamentos personalizados ou planejar a sua próxima grande viagem.</p>
+          <span className="hero-tag-gold">{t("Atendimento Sob Medida", "Custom Service")}</span>
+          <h1 className="hero-title">{t("Fale com um Especialista", "Talk to a Specialist")}</h1>
+          <p className="hero-subtitle">{t("Entre em contato para tirar dúvidas, receber orçamentos personalizados ou planejar a sua próxima grande viagem.", "Get in touch to ask questions, receive personalized quotes, or plan your next great trip.")}</p>
         </div>
         
         {/* Divisor Diagonal Geométrico */}
@@ -54,18 +59,18 @@ export default function Contato() {
         {/* Lado Esquerdo: Info de Contato */}
         <div className="contato-info-area reveal">
           <div className="info-intro">
-            <h2>Vamos planejar?</h2>
-            <p>Estamos prontos para transformar seus sonhos de viagem em um itinerário perfeito sob medida.</p>
+            <h2>{t("Vamos planejar?", "Let's plan?")}</h2>
+            <p>{t("Estamos prontos para transformar seus sonhos de viagem em um itinerário perfeito sob medida.", "We are ready to turn your travel dreams into a perfect tailor-made itinerary.")}</p>
           </div>
 
           <div className="info-items-list">
             <div className="info-item-card glass-card reveal reveal-delay-1">
               <div className="info-icon-circle"><Phone size={20} /></div>
               <div className="info-text">
-                <h3>Telefone & WhatsApp</h3>
+                <h3>{t("Telefone & WhatsApp", "Phone & WhatsApp")}</h3>
                 <p>{settings.phone || '(14) 99999-9999'}</p>
                 <button onClick={openWhatsApp} className="info-cta-link">
-                  <MessageCircle size={14} style={{ marginRight: '6px' }} /> Enviar Mensagem
+                  <MessageCircle size={14} style={{ marginRight: '6px' }} /> {t("Enviar Mensagem", "Send Message")}
                 </button>
               </div>
             </div>
@@ -73,7 +78,7 @@ export default function Contato() {
             <div className="info-item-card glass-card reveal reveal-delay-2">
               <div className="info-icon-circle"><Mail size={20} /></div>
               <div className="info-text">
-                <h3>E-mail</h3>
+                <h3>{t("E-mail", "Email")}</h3>
                 <p>{settings.email || 'contato@ladolcevitaviagens.com.br'}</p>
               </div>
             </div>
@@ -81,8 +86,8 @@ export default function Contato() {
             <div className="info-item-card glass-card reveal reveal-delay-3">
               <div className="info-icon-circle"><Clock size={20} /></div>
               <div className="info-text">
-                <h3>Horário de Atendimento</h3>
-                <p>{settings.hours || 'Seg - Sex: 09h às 18h'}</p>
+                <h3>{t("Horário de Atendimento", "Business Hours")}</h3>
+                <p>{t(settings.hours || 'Seg - Sex: 09h às 18h', 'Mon - Fri: 9am to 6pm')}</p>
               </div>
             </div>
           </div>
@@ -93,60 +98,60 @@ export default function Contato() {
           {submitted ? (
             <div className="form-success text-center">
               <div className="success-icon-wrapper">✓</div>
-              <h2>Mensagem Enviada!</h2>
-              <p>Agradecemos o contato. Um de nossos concierges especializados entrará em contato em até 24 horas úteis.</p>
+              <h2>{t("Mensagem Enviada!", "Message Sent!")}</h2>
+              <p>{t("Agradecemos o contato. Um de nossos concierges especializados entrará em contato em até 24 horas úteis.", "Thank you for contacting us. One of our specialized concierges will get in touch within 24 business hours.")}</p>
               <button onClick={() => setSubmitted(false)} className="btn btn-primary" style={{ marginTop: '24px' }}>
-                Enviar Outra Mensagem
+                {t("Enviar Outra Mensagem", "Send Another Message")}
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="consultation-form">
-              <h3>Solicitar Consulta de Viagem</h3>
-              <p className="form-intro-desc">Preencha o formulário abaixo e iniciaremos o desenho do seu roteiro.</p>
+              <h3>{t("Solicitar Consulta de Viagem", "Request Travel Consultation")}</h3>
+              <p className="form-intro-desc">{t("Preencha o formulário abaixo e iniciaremos o desenho do seu roteiro.", "Fill out the form below and we will start designing your itinerary.")}</p>
 
               <div className="form-group-custom">
-                <label htmlFor="name">Nome Completo</label>
+                <label htmlFor="name">{t("Nome Completo", "Full Name")}</label>
                 <input 
                   type="text" 
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Ex: Maria Silva"
+                  placeholder={t("Ex: Maria Silva", "E.g.: Mary Smith")}
                   required
                 />
               </div>
 
               <div className="form-row-two-col">
                 <div className="form-group-custom">
-                  <label htmlFor="email">E-mail</label>
+                  <label htmlFor="email">{t("E-mail", "Email")}</label>
                   <input 
                     type="email" 
                     id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="Ex: maria@email.com"
+                    placeholder={t("Ex: maria@email.com", "E.g.: mary@email.com")}
                     required
                   />
                 </div>
 
                 <div className="form-group-custom">
-                  <label htmlFor="phone">Telefone / WhatsApp</label>
+                  <label htmlFor="phone">{t("Telefone / WhatsApp", "Phone / WhatsApp")}</label>
                   <input 
                     type="tel" 
                     id="phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="Ex: (14) 99999-9999"
+                    placeholder={t("Ex: (14) 99999-9999", "E.g.: +1 (123) 456-7890")}
                     required
                   />
                 </div>
               </div>
 
               <div className="form-group-custom">
-                <label htmlFor="destination">Destino de Interesse</label>
+                <label htmlFor="destination">{t("Destino de Interesse", "Destination of Interest")}</label>
                 <select 
                   id="destination" 
                   name="destination"
@@ -154,30 +159,33 @@ export default function Contato() {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Selecione um destino</option>
-                  <option value="Toscana & Vinhos (Itália)">Toscana & Vinhos (Itália)</option>
-                  <option value="Costa Amalfitana (Itália)">Costa Amalfitana (Itália)</option>
-                  <option value="Portugal Completo (Portugal)">Portugal Completo (Portugal)</option>
-                  <option value="Lago de Como & Milão (Itália)">Lago de Como & Milão (Itália)</option>
-                  <option value="Outro Destino Personalizado">Outro Destino Personalizado</option>
+                  <option value="">{t("Selecione um destino", "Select a destination")}</option>
+                  <option value="Toscana & Vinhos (Itália)">{t("Toscana & Vinhos (Itália)", "Tuscany & Wines (Italy)")}</option>
+                  <option value="Costa Amalfitana (Itália)">{t("Costa Amalfitana (Itália)", "Amalfi Coast (Italy)")}</option>
+                  <option value="Portugal Completo (Portugal)">{t("Portugal Completo (Portugal)", "Complete Portugal (Portugal)")}</option>
+                  <option value="Lago de Como & Milão (Itália)">{t("Lago de Como & Milão (Itália)", "Lake Como & Milan (Italy)")}</option>
+                  <option value="Outro Destino Personalizado">{t("Outro Destino Personalizado", "Other Custom Destination")}</option>
                 </select>
               </div>
 
               <div className="form-group-custom">
-                <label htmlFor="message">Conte-nos sobre sua viagem dos sonhos</label>
+                <label htmlFor="message">{t("Conte-nos sobre sua viagem dos sonhos", "Tell us about your dream trip")}</label>
                 <textarea 
                   id="message" 
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   rows="4"
-                  placeholder="Ex: Gostaria de viajar em casal em Setembro, focando em vinhedos e experiências gastronômicas..."
+                  placeholder={t(
+                    "Ex: Gostaria de viajar em casal em Setembro, focando em vinhedos e experiências gastronômicas...",
+                    "E.g.: I would like to travel as a couple in September, focusing on vineyards and gastronomic experiences..."
+                  )}
                   required
                 ></textarea>
               </div>
 
               <button type="submit" className="btn btn-primary w-full btn-submit-form" style={{ width: '100%', marginTop: '10px' }}>
-                <span>Enviar Solicitação</span>
+                <span>{t("Enviar Solicitação", "Send Request")}</span>
                 <Send size={16} style={{ marginLeft: '8px' }} />
               </button>
             </form>
