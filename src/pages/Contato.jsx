@@ -444,6 +444,18 @@ export default function Contato() {
         }
 
         @media (max-width: 992px) {
+          .contato-hero {
+            height: auto;
+            min-height: 400px;
+            padding-top: calc(var(--header-height) + 30px);
+            padding-bottom: 90px;
+          }
+          .hero-title {
+            font-size: 3.5rem;
+          }
+          .hero-subtitle {
+            font-size: 1.15rem;
+          }
           .contato-layout-grid {
             grid-template-columns: 1fr;
             gap: 40px;
@@ -451,9 +463,33 @@ export default function Contato() {
         }
 
         @media (max-width: 768px) {
+          .contato-hero {
+            min-height: 360px;
+            padding-top: calc(var(--header-height) + 20px);
+            padding-bottom: 80px;
+          }
+          .hero-title {
+            font-size: 2.8rem;
+          }
+          .hero-subtitle {
+            font-size: 1.05rem;
+          }
           .form-row-two-col {
             grid-template-columns: 1fr;
             gap: 0;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .contato-hero {
+            padding-top: calc(var(--header-height) + 10px);
+            padding-bottom: 75px;
+          }
+          .hero-title {
+            font-size: 2.4rem;
+          }
+          .hero-subtitle {
+            font-size: 0.95rem;
           }
         }
       `}</style>
