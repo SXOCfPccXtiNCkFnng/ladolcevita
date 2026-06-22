@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Users, ArrowRight, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ArrowRight, CheckCircle, AlertCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTrips } from '../hooks/useTrips';
 import whatsappIcon from '../assets/whatsapp.png';
 import costaAmalfitana from '../assets/costa_amalfitana.png';
@@ -10,6 +10,14 @@ import { useLanguage } from '../context/LanguageContext';
 export default function ProximasViagens() {
   const { settings } = useSettings();
   const { t, language } = useLanguage();
+  const [expandedTrips, setExpandedTrips] = useState({});
+
+  const toggleTripExpand = (tripId) => {
+    setExpandedTrips(prev => ({
+      ...prev,
+      [tripId]: !prev[tripId]
+    }));
+  };
 
   const isCountryRedundant = (country, title) => {
     if (!country || !title) return false;
@@ -132,6 +140,7 @@ export default function ProximasViagens() {
         <div className="timeline-list">
           {sortedTrips.map((trip) => {
             const dateStr = trip.date || "";
+            const isExpanded = !!expandedTrips[trip.id];
             
             // Parse year
             const yearMatch = dateStr.match(/\b\d{4}\b/);
@@ -202,7 +211,7 @@ export default function ProximasViagens() {
                       <span className="trip-country-tag">{t(trip.country)}</span>
                     )}
                     <h3>{t(trip.title)}</h3>
-                    <p className="trip-summary-desc">{t(trip.description)}</p>
+                    <p className={`trip-summary-desc ${!isExpanded ? 'collapsed' : ''}`}>{t(trip.description)}</p>
                     
                     <div className="trip-meta-info-grid">
                       <div className="meta-info-item">
@@ -222,7 +231,15 @@ export default function ProximasViagens() {
                       {trip.route.length > 4 && <span className="timeline-route-chip-more">+{trip.route.length - 4} {t("mais", "more")}</span>}
                     </div>
 
-                    {trip.included && (
+                    <button 
+                      onClick={() => toggleTripExpand(trip.id)} 
+                      className="btn-toggle-details"
+                    >
+                      <span>{isExpanded ? t("Recolher Detalhes", "Collapse Details") : t("Ver Roteiro e Detalhes", "View Itinerary & Details")}</span>
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {isExpanded && trip.included && (
                       <div className="trip-included-box">
                         <h4 className="included-title">{t("O que está incluso no pacote", "What's included in the package")}</h4>
                         <ul className="included-list">
@@ -551,6 +568,35 @@ export default function ProximasViagens() {
           color: var(--color-text-muted);
           line-height: 1.6;
           margin-bottom: 16px;
+        }
+
+        .trip-summary-desc.collapsed {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .btn-toggle-details {
+          background: none;
+          border: none;
+          color: var(--color-primary-gold-dark);
+          font-family: var(--font-body);
+          font-size: 0.88rem;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          padding: 8px 0;
+          margin-top: 14px;
+          margin-bottom: 4px;
+          transition: color 0.2s;
+          align-self: flex-start;
+        }
+
+        .btn-toggle-details:hover {
+          color: var(--color-dark-green);
         }
 
         .trip-meta-info-grid {
