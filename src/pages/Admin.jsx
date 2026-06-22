@@ -504,6 +504,7 @@ export default function Admin() {
       spotsLeft: 12,
       status: 'Ativo',
       description: '',
+      included: '',
       image: '',
       tagsString: '',
       routeString: '',
@@ -531,10 +532,11 @@ export default function Admin() {
       date: trip.date,
       price: formattedPrice,
       hidePrice: trip.hidePrice || false,
-      spotsTotal: trip.spotsTotal,
-      spotsLeft: trip.spotsLeft,
+      spotsTotal: (trip.spotsTotal !== null && trip.spotsTotal !== undefined) ? trip.spotsTotal : '',
+      spotsLeft: (trip.spotsLeft !== null && trip.spotsLeft !== undefined) ? trip.spotsLeft : '',
       status: trip.status,
       description: trip.description,
+      included: trip.included || '',
       image: trip.image,
       tagsString: (trip.tags || []).join(', '),
       routeString: (trip.route || []).join(', '),
@@ -609,10 +611,11 @@ export default function Admin() {
       date: tripForm.date,
       price: tripForm.price,
       hidePrice: tripForm.hidePrice || false,
-      spotsTotal: Number(tripForm.spotsTotal),
-      spotsLeft: Number(tripForm.spotsLeft),
+      spotsTotal: (tripForm.spotsTotal !== '' && tripForm.spotsTotal !== null && tripForm.spotsTotal !== undefined) ? Number(tripForm.spotsTotal) : null,
+      spotsLeft: (tripForm.spotsLeft !== '' && tripForm.spotsLeft !== null && tripForm.spotsLeft !== undefined) ? Number(tripForm.spotsLeft) : null,
       status: tripForm.status,
       description: tripForm.description,
+      included: tripForm.included,
       image: tripForm.image || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80',
       tags,
       route,
@@ -1674,7 +1677,6 @@ export default function Admin() {
                       type="number" 
                       value={tripForm.spotsTotal} 
                       onChange={e => setTripForm({...tripForm, spotsTotal: e.target.value})} 
-                      required 
                     />
                   </div>
 
@@ -1684,7 +1686,6 @@ export default function Admin() {
                       type="number" 
                       value={tripForm.spotsLeft} 
                       onChange={e => setTripForm({...tripForm, spotsLeft: e.target.value})} 
-                      required 
                     />
                   </div>
 
@@ -1844,6 +1845,16 @@ export default function Admin() {
                     rows="4" 
                     placeholder="Texto curto e atrativo sobre a viagem..."
                     required 
+                  ></textarea>
+                </div>
+
+                <div className="form-group-custom">
+                  <label>O que está incluso no pacote (um item por linha)</label>
+                  <textarea 
+                    value={tripForm.included} 
+                    onChange={e => setTripForm({...tripForm, included: e.target.value})} 
+                    rows="4" 
+                    placeholder="Ex: Hospedagem com café da manhã&#10;Traslados privativos&#10;Passeios guiados com ingressos..."
                   ></textarea>
                 </div>
 

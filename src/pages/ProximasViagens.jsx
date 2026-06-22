@@ -106,8 +106,11 @@ export default function ProximasViagens() {
             const shortMonth = translatedMonth.substring(0, 3).toUpperCase();
             
             // Definição de cores e porcentagem das vagas preenchidas
-            const spotsBooked = trip.spotsTotal - trip.spotsLeft;
-            const progressPercent = Math.min(100, (spotsBooked / trip.spotsTotal) * 100);
+            const spotsTotal = trip.spotsTotal;
+            const spotsLeft = trip.spotsLeft;
+            const hasSpotsInfo = spotsTotal !== null && spotsLeft !== null && spotsTotal > 0;
+            const spotsBooked = hasSpotsInfo ? (spotsTotal - spotsLeft) : 0;
+            const progressPercent = hasSpotsInfo ? Math.min(100, (spotsBooked / spotsTotal) * 100) : 0;
             
             let statusIcon = <CheckCircle size={16} className="text-green" />;
             let statusClass = "status-aberto";
@@ -117,7 +120,7 @@ export default function ProximasViagens() {
               statusIcon = <XCircle size={16} className="text-muted" />;
               statusClass = "status-esgotado";
               statusText = t("Grupo Esgotado", "Group Sold Out");
-            } else if (trip.status === "Vagas Limitadas" || trip.spotsLeft <= 3) {
+            } else if (trip.status === "Vagas Limitadas" || (hasSpotsInfo && spotsLeft <= 3)) {
               statusIcon = <AlertCircle size={16} className="text-red" />;
               statusClass = "status-limitado";
               statusText = t("Últimas Vagas!", "Last Spots!");
@@ -164,6 +167,20 @@ export default function ProximasViagens() {
                       ))}
                       {trip.route.length > 4 && <span className="timeline-route-chip-more">+{trip.route.length - 4} {t("mais", "more")}</span>}
                     </div>
+
+                    {trip.included && (
+                      <div className="trip-included-box">
+                        <h4 className="included-title">{t("O que está incluso no pacote", "What's included in the package")}</h4>
+                        <ul className="included-list">
+                          {trip.included.split('\n').map((item, idx) => item.trim() && (
+                            <li key={idx} className="included-item">
+                              <span className="included-bullet">✓</span>
+                              <span>{t(item.trim())}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -190,16 +207,20 @@ export default function ProximasViagens() {
                         {statusIcon}
                         <span className={`status-badge-text ${statusClass}`}>{statusText}</span>
                       </div>
-                      <span className="spots-counter">
-                        {trip.status === "Esgotado" ? t("Sem vagas", "No spots") : t(`${trip.spotsLeft} de ${trip.spotsTotal} livres`, `${trip.spotsLeft} of ${trip.spotsTotal} free`)}
-                      </span>
+                      {hasSpotsInfo && (
+                        <span className="spots-counter">
+                          {trip.status === "Esgotado" ? t("Sem vagas", "No spots") : t(`${trip.spotsLeft} de ${trip.spotsTotal} livres`, `${trip.spotsLeft} of ${trip.spotsTotal} free`)}
+                        </span>
+                      )}
                     </div>
-                    <div className="spots-progress-container">
-                      <div 
-                        className={`spots-progress-fill ${trip.status === "Esgotado" ? "fill-esgotado" : trip.spotsLeft <= 3 ? "fill-urgente" : "fill-normal"}`} 
-                        style={{ width: `${progressPercent}%` }}
-                      ></div>
-                    </div>
+                    {hasSpotsInfo && (
+                      <div className="spots-progress-container">
+                        <div 
+                          className={`spots-progress-fill ${trip.status === "Esgotado" ? "fill-esgotado" : trip.spotsLeft <= 3 ? "fill-urgente" : "fill-normal"}`} 
+                          style={{ width: `${progressPercent}%` }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
 
                   <button 
@@ -520,6 +541,48 @@ export default function ProximasViagens() {
           font-weight: 700;
           padding: 4px 6px;
           align-self: center;
+        }
+
+        .trip-included-box {
+          margin-top: 16px;
+          padding: 14px 18px;
+          background-color: var(--color-bg-cream);
+          border-left: 3px solid var(--color-primary-gold);
+          border-radius: 4px;
+        }
+
+        .included-title {
+          font-family: var(--font-body);
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--color-dark-green);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 8px;
+        }
+
+        .included-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .included-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          font-size: 0.82rem;
+          color: var(--color-text-muted);
+          line-height: 1.4;
+        }
+
+        .included-bullet {
+          color: var(--color-primary-gold-dark);
+          font-weight: bold;
+          font-size: 0.85rem;
         }
 
         /* Coluna 3: Ação e Preços */
