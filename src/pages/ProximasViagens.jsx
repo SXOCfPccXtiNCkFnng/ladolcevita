@@ -11,6 +11,7 @@ export default function ProximasViagens() {
   const { settings } = useSettings();
   const { t, language } = useLanguage();
   const [expandedTrips, setExpandedTrips] = useState({});
+  const [activeMapImage, setActiveMapImage] = useState(null);
 
   const toggleTripExpand = (tripId) => {
     setExpandedTrips(prev => ({
@@ -231,26 +232,70 @@ export default function ProximasViagens() {
                       {trip.route.length > 4 && <span className="timeline-route-chip-more">+{trip.route.length - 4} {t("mais", "more")}</span>}
                     </div>
 
-                    <button 
-                      onClick={() => toggleTripExpand(trip.id)} 
-                      className="btn-toggle-details"
-                    >
-                      <span>{isExpanded ? t("Recolher Detalhes", "Collapse Details") : t("Ver Roteiro e Detalhes", "View Itinerary & Details")}</span>
-                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
+                    {!isExpanded && (
+                      <button 
+                        onClick={() => toggleTripExpand(trip.id)} 
+                        className="btn-toggle-details"
+                      >
+                        <span>{t("Ver Roteiro e Detalhes", "View Itinerary & Details")}</span>
+                        <ChevronDown size={16} />
+                      </button>
+                    )}
 
-                    {isExpanded && trip.included && (
-                      <div className="trip-included-box">
-                        <h4 className="included-title">{t("O que está incluso no pacote", "What's included in the package")}</h4>
-                        <ul className="included-list">
-                          {trip.included.split('\n').map((item, idx) => item.trim() && (
-                            <li key={idx} className="included-item">
-                              <span className="included-bullet">✓</span>
-                              <span>{t(item.trim())}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    {isExpanded && (
+                      <>
+                        {trip.mapImage && (
+                          <div className="trip-map-section">
+                            <h4 className="map-section-title">
+                              {t("Mapa do Roteiro", "Route Map")}
+                            </h4>
+                            <div className="trip-map-grid">
+                              <div className="trip-map-img-container" onClick={() => setActiveMapImage(trip.mapImage)} title={t("Clique para ampliar", "Click to enlarge")}>
+                                <img src={trip.mapImage} alt={t(`Mapa de ${trip.title}`, `Map of ${trip.title}`)} className="trip-map-img" />
+                              </div>
+                              
+                              {trip.mapDistances && (
+                                <div className="trip-map-distances-box">
+                                  <h5 className="distances-title">
+                                    📍 {t("Distâncias Aproximadas", "Approximate Distances")}
+                                  </h5>
+                                  <ul className="distances-list">
+                                    {trip.mapDistances.split('\n').map((dist, idx) => dist.trim() && (
+                                      <li key={idx} className="distance-item">
+                                        <span className="distance-icon">➔</span>
+                                        <span className="distance-text">{t(dist.trim())}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {trip.included && (
+                          <div className="trip-included-box">
+                            <h4 className="included-title">{t("O que está incluso no pacote", "What's included in the package")}</h4>
+                            <ul className="included-list">
+                              {trip.included.split('\n').map((item, idx) => item.trim() && (
+                                <li key={idx} className="included-item">
+                                  <span className="included-bullet">✓</span>
+                                  <span>{t(item.trim())}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <button 
+                          onClick={() => toggleTripExpand(trip.id)} 
+                          className="btn-toggle-details"
+                          style={{ marginTop: '20px' }}
+                        >
+                          <span>{t("Recolher Detalhes", "Collapse Details")}</span>
+                          <ChevronUp size={16} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -335,6 +380,18 @@ export default function ProximasViagens() {
           </div>
         </div>
       </section>
+
+      {/* LIGHTBOX DE EXPANSÃO DO MAPA */}
+      {activeMapImage && (
+        <div className="map-lightbox-backdrop" onClick={() => setActiveMapImage(null)}>
+          <div className="map-lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="map-lightbox-close" onClick={() => setActiveMapImage(null)} title={t("Fechar", "Close")}>
+              <XCircle size={32} />
+            </button>
+            <img src={activeMapImage} alt={t("Mapa do Roteiro Expandido", "Expanded Route Map")} className="map-lightbox-img" />
+          </div>
+        </div>
+      )}
 
       {/* ESTILOS DA PÁGINA */}
       <style>{`
@@ -641,6 +698,179 @@ export default function ProximasViagens() {
           font-weight: 700;
           padding: 4px 6px;
           align-self: center;
+        }
+
+        .trip-map-section {
+          margin-top: 24px;
+          margin-bottom: 24px;
+          padding-top: 20px;
+          border-top: 1px dashed rgba(197, 168, 128, 0.2);
+        }
+
+        .map-section-title {
+          font-family: var(--font-body);
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--color-dark-green);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 16px;
+        }
+
+        .trip-map-grid {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 24px;
+          align-items: start;
+        }
+
+        .trip-map-img-container {
+          width: 100%;
+          border-radius: var(--border-radius-sm);
+          overflow: hidden;
+          border: 1px solid rgba(197, 168, 128, 0.3);
+          box-shadow: var(--shadow-subtle);
+          transition: var(--transition-smooth);
+          cursor: zoom-in;
+        }
+
+        .trip-map-img-container:hover {
+          box-shadow: var(--shadow-medium);
+          border-color: var(--color-primary-gold);
+        }
+
+        .trip-map-img {
+          width: 100%;
+          height: auto;
+          display: block;
+          max-height: 280px;
+          object-fit: cover;
+          transition: transform var(--transition-smooth);
+        }
+
+        .trip-map-img-container:hover .trip-map-img {
+          transform: scale(1.02);
+        }
+
+        .trip-map-distances-box {
+          background-color: var(--color-bg-cream);
+          padding: 20px;
+          border-radius: var(--border-radius-sm);
+          border-left: 3px solid var(--color-primary-gold);
+          box-shadow: var(--shadow-subtle);
+        }
+
+        .distances-title {
+          font-family: var(--font-body);
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--color-dark-green-dark);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+          border-bottom: 1px solid rgba(197, 168, 128, 0.2);
+          padding-bottom: 8px;
+        }
+
+        .distances-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .distance-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 0.85rem;
+          color: var(--color-text-muted);
+          font-weight: 500;
+        }
+
+        .distance-icon {
+          color: var(--color-primary-gold-dark);
+          font-weight: bold;
+        }
+
+        .distance-text {
+          line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+          .trip-map-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+        }
+
+        /* LIGHTBOX PARA MAPA EXPANDIDO */
+        .map-lightbox-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(26, 38, 29, 0.9);
+          backdrop-filter: blur(8px);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          cursor: zoom-out;
+        }
+
+        .map-lightbox-content {
+          position: relative;
+          max-width: 90vw;
+          max-height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: default;
+        }
+
+        .map-lightbox-close {
+          position: absolute;
+          top: -45px;
+          right: 0;
+          background: none;
+          border: none;
+          color: #FFFFFF;
+          cursor: pointer;
+          transition: transform 0.2s, color 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .map-lightbox-close:hover {
+          color: var(--color-primary-gold);
+          transform: scale(1.15);
+        }
+
+        .map-lightbox-img {
+          max-width: 100%;
+          max-height: 85vh;
+          object-fit: contain;
+          border-radius: var(--border-radius-sm);
+          border: 2px solid rgba(197, 168, 128, 0.4);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          animation: zoom-in-fade 0.3s ease-out;
+        }
+
+        @keyframes zoom-in-fade {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
         }
 
         .trip-included-box {

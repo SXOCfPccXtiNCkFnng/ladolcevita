@@ -125,6 +125,8 @@ export default function Admin() {
   // Estado para controle de upload de imagem
   const [imageInputMode, setImageInputMode] = useState('url'); // 'url' | 'upload'
   const [imageUploadPreview, setImageUploadPreview] = useState(null);
+  const [mapImageInputMode, setMapImageInputMode] = useState('url'); // 'url' | 'upload'
+  const [mapImageUploadPreview, setMapImageUploadPreview] = useState(null);
   const [sendPush, setSendPush] = useState(false);
 
   const handleImageFileChange = async (e, formType = 'trip') => {
@@ -142,13 +144,18 @@ export default function Admin() {
       showFeedback('success', 'Processando e otimizando imagem...');
       const compressedBase64 = await compressImage(file, 1200, 1200, 0.7);
       
-      setImageUploadPreview(compressedBase64);
-      if (formType === 'destination') {
-        setDestinationForm(prev => ({ ...prev, image: compressedBase64 }));
-      } else if (formType === 'moment') {
-        setMomentForm(prev => ({ ...prev, image: compressedBase64 }));
+      if (formType === 'tripMap') {
+        setMapImageUploadPreview(compressedBase64);
+        setTripForm(prev => ({ ...prev, mapImage: compressedBase64 }));
       } else {
-        setTripForm(prev => ({ ...prev, image: compressedBase64 }));
+        setImageUploadPreview(compressedBase64);
+        if (formType === 'destination') {
+          setDestinationForm(prev => ({ ...prev, image: compressedBase64 }));
+        } else if (formType === 'moment') {
+          setMomentForm(prev => ({ ...prev, image: compressedBase64 }));
+        } else {
+          setTripForm(prev => ({ ...prev, image: compressedBase64 }));
+        }
       }
       showFeedback('success', 'Imagem otimizada com sucesso!');
     } catch (err) {
@@ -173,6 +180,8 @@ export default function Admin() {
     image: '',
     tagsString: '', // Separados por vírgula
     routeString: '', // Separados por vírgula
+    mapImage: '',
+    mapDistances: '',
   });
 
 
@@ -392,6 +401,8 @@ export default function Admin() {
             image: trip.image,
             tags: trip.tags || [],
             route: trip.route || [],
+            mapImage: trip.mapImage || '',
+            mapDistances: trip.mapDistances || '',
             itinerary: trip.itinerary || [
               { day: 1, title: `Chegada em ${trip.title}`, desc: `Traslado privado ao hotel boutique. Jantar especial de boas-vindas.` }
             ]
@@ -536,6 +547,8 @@ export default function Admin() {
     setEditingTripId(null);
     setImageInputMode('url');
     setImageUploadPreview(null);
+    setMapImageInputMode('url');
+    setMapImageUploadPreview(null);
     setSendPush(false);
     setTripForm({
       title: '',
@@ -553,6 +566,8 @@ export default function Admin() {
       image: '',
       tagsString: '',
       routeString: '',
+      mapImage: '',
+      mapDistances: '',
     });
     setIsModalOpen(true);
   };
@@ -585,11 +600,17 @@ export default function Admin() {
       image: trip.image,
       tagsString: (trip.tags || []).join(', '),
       routeString: (trip.route || []).join(', '),
+      mapImage: trip.mapImage || '',
+      mapDistances: trip.mapDistances || '',
     });
     // Detecta automaticamente se a imagem é base64 (upload) ou URL
     const imageIsBase64 = trip.image && trip.image.startsWith('data:');
     setImageInputMode(imageIsBase64 ? 'upload' : 'url');
     setImageUploadPreview(imageIsBase64 ? trip.image : null);
+
+    const mapImageIsBase64 = trip.mapImage && trip.mapImage.startsWith('data:');
+    setMapImageInputMode(mapImageIsBase64 ? 'upload' : 'url');
+    setMapImageUploadPreview(mapImageIsBase64 ? trip.mapImage : null);
     setIsModalOpen(true);
   };
 
@@ -664,6 +685,8 @@ export default function Admin() {
       image: tripForm.image || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80',
       tags,
       route,
+      mapImage: tripForm.mapImage || '',
+      mapDistances: tripForm.mapDistances || '',
       itinerary: [
         { day: 1, title: `Chegada em ${tripForm.title}`, desc: `Recepção no aeroporto e traslado privativo para o nosso hotel boutique.` },
         { day: 2, title: "Exploração Guiada", desc: "Passeio exclusivo acompanhado de guia local especializado nos segredos da região." }
@@ -1880,6 +1903,124 @@ export default function Admin() {
                     onChange={e => setTripForm({...tripForm, routeString: e.target.value})} 
                     placeholder="Ex: Florença, Siena, Pisa, Lucca" 
                   />
+                </div>
+
+                {/* CONFIGURAÇÃO DO MAPA DO ROTEIRO */}
+                <div style={{ borderTop: '1px dashed var(--glass-border)', paddingTop: '15px', marginTop: '15px' }}>
+                  <h4 style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-primary-gold-dark)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                    Mapa e Distâncias do Roteiro
+                  </h4>
+                  
+                  <div className="form-group-custom">
+                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <span>Imagem do Mapa do Roteiro (Opcional)</span>
+                      {/* Toggle URL / Upload para o Mapa */}
+                      <div style={{ display: 'flex', background: 'var(--color-bg-cream)', borderRadius: '20px', padding: '3px', border: '1px solid var(--glass-border)', gap: '2px' }}>
+                        <button
+                          type="button"
+                          onClick={() => { setMapImageInputMode('url'); setMapImageUploadPreview(null); }}
+                          style={{
+                            padding: '3px 12px', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '600',
+                            background: mapImageInputMode === 'url' ? 'var(--color-dark-green)' : 'transparent',
+                            color: mapImageInputMode === 'url' ? '#fff' : 'var(--color-text-muted)',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          🔗 URL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setMapImageInputMode('upload'); setMapImageUploadPreview(null); }}
+                          style={{
+                            padding: '3px 12px', borderRadius: '16px', border: 'none', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '600',
+                            background: mapImageInputMode === 'upload' ? 'var(--color-dark-green)' : 'transparent',
+                            color: mapImageInputMode === 'upload' ? '#fff' : 'var(--color-text-muted)',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          📁 Upload
+                        </button>
+                      </div>
+                    </label>
+
+                    {mapImageInputMode === 'url' ? (
+                      <input
+                        type="url"
+                        value={tripForm.mapImage && !tripForm.mapImage.startsWith('data:') ? tripForm.mapImage : ''}
+                        onChange={e => setTripForm({...tripForm, mapImage: e.target.value})}
+                        placeholder="https://images.unsplash.com/... ou print do mapa"
+                      />
+                    ) : (
+                      <div>
+                        <label
+                          htmlFor="map-image-upload-input"
+                          style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                            border: '2px dashed var(--glass-border)', borderRadius: '8px', padding: '20px',
+                            cursor: 'pointer', background: 'var(--color-bg-cream)', transition: 'border-color 0.2s',
+                            gap: '8px'
+                          }}
+                          onDragOver={e => e.preventDefault()}
+                          onDrop={e => {
+                            e.preventDefault();
+                            const file = e.dataTransfer.files[0];
+                            if (file) handleImageFileChange({ target: { files: [file] } }, 'tripMap');
+                          }}
+                        >
+                          {mapImageUploadPreview || (tripForm.mapImage && tripForm.mapImage.startsWith('data:')) ? (
+                            <img
+                              src={mapImageUploadPreview || tripForm.mapImage}
+                              alt="preview do mapa"
+                              style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }}
+                            />
+                          ) : (
+                            <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                              <div style={{ fontSize: '2rem', marginBottom: '6px' }}>🗺️</div>
+                              <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>Clique para escolher ou arraste o print do mapa</span>
+                              <br/>
+                              <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 15MB</span>
+                            </div>
+                          )}
+                          <input
+                            id="map-image-upload-input"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={e => handleImageFileChange(e, 'tripMap')}
+                          />
+                        </label>
+                        {(mapImageUploadPreview || (tripForm.mapImage && tripForm.mapImage.startsWith('data:'))) && (
+                          <button
+                            type="button"
+                            style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--color-accent-red)', background: 'none', border: 'none', cursor: 'pointer' }}
+                            onClick={() => { setMapImageUploadPreview(null); setTripForm(prev => ({...prev, mapImage: ''})); }}
+                          >
+                            ✕ Remover imagem do mapa
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Preview quando URL digitada */}
+                    {mapImageInputMode === 'url' && tripForm.mapImage && !tripForm.mapImage.startsWith('data:') && (
+                      <img
+                        src={tripForm.mapImage}
+                        alt="preview do mapa"
+                        style={{ marginTop: '8px', width: '100%', height: '100px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--glass-border)' }}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="form-group-custom">
+                    <label>Distâncias do Roteiro (uma por linha)</label>
+                    <textarea 
+                      value={tripForm.mapDistances} 
+                      onChange={e => setTripForm({...tripForm, mapDistances: e.target.value})} 
+                      rows="3" 
+                      placeholder="Ex: Roma ➔ Sorrento: ~260 km&#10;Sorrento ➔ Palermo: ~270 km (via marítima)&#10;Roma ➔ Palermo: ~430 km"
+                    ></textarea>
+                  </div>
                 </div>
 
                 <div className="form-group-custom">

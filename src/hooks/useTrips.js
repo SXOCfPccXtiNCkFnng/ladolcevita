@@ -31,7 +31,9 @@ export function useTrips() {
             image: data.image || '',
             tags: data.tags || [],
             route: data.route || [],
-            itinerary: data.itinerary || []
+            itinerary: data.itinerary || [],
+            mapImage: data.mapImage || '',
+            mapDistances: data.mapDistances || ''
           });
         });
         

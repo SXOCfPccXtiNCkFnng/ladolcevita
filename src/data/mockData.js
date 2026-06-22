@@ -22,6 +22,8 @@ export const mockTrips = [
     image: heroTuscany,
     tags: ["Vinhos", "Cultura", "Exclusivo"],
     route: ["Florença", "Siena", "San Gimignano", "Val d'Orcia", "Montepulciano", "Lucca"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Chegada em Florença", desc: "Traslado privado ao nosso hotel boutique na Toscana rural. Jantar de boas-vindas no jardim." }
     ]
@@ -42,6 +44,8 @@ export const mockTrips = [
     image: siciliaDestination,
     tags: ["Gastronomia", "Cultura", "Litoral"],
     route: ["Catânia", "Taormina", "Siracusa", "Noto", "Ragusa", "Agrigento", "Palermo"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Chegada a Catânia e Taormina", desc: "Recepção no aeroporto e traslado privado para o hotel em Taormina." }
     ]
@@ -62,6 +66,8 @@ export const mockTrips = [
     image: lagoDeComo,
     tags: ["Lagos", "Luxo", "Moda"],
     route: ["Milão", "Como", "Bellagio", "Varenna", "Menaggio"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Milão Cosmopolita", desc: "Check-in no hotel no centro de Milão. Tour guiado pela Galeria Vittorio Emmanuele e Duomo." }
     ]
@@ -82,6 +88,8 @@ export const mockTrips = [
     image: portugalCompleto,
     tags: ["Grupo", "História", "Gastronomia"],
     route: ["Lisboa", "Fátima", "Óbidos", "Setúbal", "Évora", "Tomar", "Coimbra", "Porto", "Guimarães", "Braga", "Aveiro", "Nazaré"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Chegada a Lisboa", desc: "Recepção no aeroporto e traslado privado para o hotel. Tempo livre para descansar e jantar de boas-vindas." },
       { day: 2, title: "Lisboa Histórica", desc: "Visita guiada ao Bairro de Belém, Mosteiro dos Jerónimos e Torre de Belém." }
@@ -103,6 +111,8 @@ export const mockTrips = [
     image: costaAmalfitana,
     tags: ["Litoral", "Romântico", "Barco"],
     route: ["Nápoles", "Sorrento", "Positano", "Amalfi", "Ravello", "Ilha de Capri"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Chegada a Nápoles e Sorrento", desc: "Recepção no aeroporto e traslado panorâmico até Sorrento." }
     ]
@@ -123,6 +133,8 @@ export const mockTrips = [
     image: pugliaDestination,
     tags: ["Grupo", "História", "Exclusivo"],
     route: ["Bari", "Polignano a Mare", "Alberobello", "Ostuni", "Lecce", "Otranto"],
+    mapImage: "",
+    mapDistances: "",
     itinerary: [
       { day: 1, title: "Bari e Polignano a Mare", desc: "Recepção no aeroporto e traslado para o hotel em Polignano, debruçado sobre as falésias." }
     ]
