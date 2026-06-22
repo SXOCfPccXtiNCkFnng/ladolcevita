@@ -28,34 +28,65 @@ export default function ProximasViagens() {
     "Setembro": "September", "Outubro": "October", "Novembro": "November", "Dezembro": "December"
   };
 
+  const getSortValue = (dateStr) => {
+    if (!dateStr) return 0;
+    
+    const yearMatch = dateStr.match(/\b\d{4}\b/);
+    const year = yearMatch ? parseInt(yearMatch[0]) : 0;
+    
+    let monthName = "";
+    const words = dateStr.split(/\s+/);
+    
+    // Find the month word
+    for (const word of words) {
+      const cleanWord = word.replace(/[^a-zA-ZáéíóúÁÉÍÓÚçÇ]/g, "");
+      if (monthOrder[cleanWord]) {
+        monthName = cleanWord;
+        break;
+      }
+    }
+    
+    const month = monthOrder[monthName] || 0;
+    
+    // Check if there is a day
+    const dayMatch = dateStr.match(/^\d+/);
+    const day = dayMatch ? parseInt(dayMatch[0]) : 0;
+    
+    return year * 372 + month * 31 + day;
+  };
+
   const translateDate = (dateStr) => {
     if (!dateStr) return "";
     if (language === 'pt') return dateStr;
-    const parts = dateStr.split(" ");
-    if (parts.length >= 3) {
-      const monthPt = parts[0];
-      const year = parts[2];
-      const monthEn = monthTranslations[monthPt] || monthPt;
-      return `${monthEn} ${year}`;
+    
+    const yearMatch = dateStr.match(/\b\d{4}\b/);
+    const year = yearMatch ? yearMatch[0] : "";
+    
+    const dayMatch = dateStr.match(/^\d+/);
+    const day = dayMatch ? dayMatch[0] : "";
+    
+    let monthPt = "";
+    const words = dateStr.split(/\s+/);
+    for (const word of words) {
+      const cleanWord = word.replace(/[^a-zA-ZáéíóúÁÉÍÓÚçÇ]/g, "");
+      if (monthOrder[cleanWord]) {
+        monthPt = cleanWord;
+        break;
+      }
     }
-    return dateStr;
+    
+    const monthEn = monthTranslations[monthPt] || monthPt;
+    
+    if (day) {
+      return `${monthEn} ${day}, ${year}`;
+    }
+    return `${monthEn} ${year}`;
   };
 
   const { trips } = useTrips();
 
   // Ordena as viagens de forma cronológica
-  const sortedTrips = [...trips].sort((a, b) => {
-    // Evita erros se a.date ou b.date não forem válidos
-    const dateA = a.date || "";
-    const dateB = b.date || "";
-    const [monthA, , yearA] = dateA.split(" ");
-    const [monthB, , yearB] = dateB.split(" ");
-    
-    const valA = (parseInt(yearA) || 0) * 12 + (monthOrder[monthA] || 0);
-    const valB = (parseInt(yearB) || 0) * 12 + (monthOrder[monthB] || 0);
-    
-    return valA - valB;
-  });
+  const sortedTrips = [...trips].sort((a, b) => getSortValue(a.date) - getSortValue(b.date));
 
   const openWhatsApp = (trip) => {
     let text = "";
@@ -101,8 +132,30 @@ export default function ProximasViagens() {
         <div className="timeline-list">
           {sortedTrips.map((trip) => {
             const dateStr = trip.date || "";
-            const [month, , year] = dateStr.split(" ");
-            const translatedMonth = monthTranslations[month] || month;
+            
+            // Parse year
+            const yearMatch = dateStr.match(/\b\d{4}\b/);
+            const yearVal = yearMatch ? yearMatch[0] : "";
+            
+            // Parse day if any
+            const dayMatch = dateStr.match(/^\d+/);
+            const dayVal = dayMatch ? dayMatch[0] : "";
+            
+            // Parse month
+            let monthName = "";
+            const words = dateStr.split(/\s+/);
+            for (const word of words) {
+              const cleanWord = word.replace(/[^a-zA-ZáéíóúÁÉÍÓÚçÇ]/g, "");
+              if (monthOrder[cleanWord]) {
+                monthName = cleanWord;
+                break;
+              }
+            }
+            if (!monthName) {
+              monthName = words[0] || "";
+            }
+            
+            const translatedMonth = monthTranslations[monthName] || monthName;
             const shortMonth = translatedMonth.substring(0, 3).toUpperCase();
             
             // Definição de cores e porcentagem das vagas preenchidas
@@ -131,8 +184,9 @@ export default function ProximasViagens() {
               <div key={trip.id} className={`timeline-item ${trip.status === "Esgotado" ? "item-esgotado" : ""} reveal ${delayClass}`}>
                 {/* Coluna 1: Data */}
                 <div className="date-column">
-                  <span className="date-month">{shortMonth}</span>
-                  <span className="date-year">{year}</span>
+                  {dayVal && <span className="date-day" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: 'var(--color-primary-gold-dark)', lineHeight: 1, display: 'block', marginBottom: '2px' }}>{dayVal}</span>}
+                  <span className="date-month" style={dayVal ? { fontSize: '0.85rem', fontWeight: '700', letterSpacing: '0.05em' } : {}}>{shortMonth}</span>
+                  <span className="date-year" style={dayVal ? { fontSize: '0.72rem', marginTop: '1px' } : {}}>{yearVal}</span>
                   <div className="date-line-connector"></div>
                 </div>
 
@@ -414,8 +468,8 @@ export default function ProximasViagens() {
 
         /* Coluna 2: Card de Detalhes */
         .card-column {
-          display: grid;
-          grid-template-columns: 240px 1fr;
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
           background-color: var(--color-bg-white);
           border-radius: 4px;
@@ -432,8 +486,8 @@ export default function ProximasViagens() {
 
         .trip-img-wrapper {
           position: relative;
-          height: 100%;
-          min-height: 200px;
+          width: 100%;
+          height: 240px;
           overflow: hidden;
         }
 
@@ -565,9 +619,9 @@ export default function ProximasViagens() {
           list-style: none;
           padding: 0;
           margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 8px 16px;
         }
 
         .included-item {
