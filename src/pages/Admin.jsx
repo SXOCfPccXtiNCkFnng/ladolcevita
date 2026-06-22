@@ -9,6 +9,47 @@ import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebas
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { useSettings } from '../context/SettingsContext';
 
+// Helper to compress images client-side before saving to Firestore (keeps files under Firestore document size limits)
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Maintain aspect ratio
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Export as JPEG with quality
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedBase64);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 export default function Admin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState('alanfelipe1678@gmail.com');
@@ -86,30 +127,34 @@ export default function Admin() {
   const [imageUploadPreview, setImageUploadPreview] = useState(null);
   const [sendPush, setSendPush] = useState(false);
 
-  const handleImageFileChange = (e, formType = 'trip') => {
+  const handleImageFileChange = async (e, formType = 'trip') => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Verificar tamanho (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      showFeedback('error', 'Imagem muito grande! Máximo 5MB.');
+    // Verificar tamanho (máximo 15MB com compressão automática)
+    if (file.size > 15 * 1024 * 1024) {
+      showFeedback('error', 'Imagem muito grande! Máximo 15MB.');
       e.target.value = '';
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result;
-      setImageUploadPreview(base64);
+    try {
+      showFeedback('success', 'Processando e otimizando imagem...');
+      const compressedBase64 = await compressImage(file, 1200, 1200, 0.7);
+      
+      setImageUploadPreview(compressedBase64);
       if (formType === 'destination') {
-        setDestinationForm(prev => ({ ...prev, image: base64 }));
+        setDestinationForm(prev => ({ ...prev, image: compressedBase64 }));
       } else if (formType === 'moment') {
-        setMomentForm(prev => ({ ...prev, image: base64 }));
+        setMomentForm(prev => ({ ...prev, image: compressedBase64 }));
       } else {
-        setTripForm(prev => ({ ...prev, image: base64 }));
+        setTripForm(prev => ({ ...prev, image: compressedBase64 }));
       }
-    };
-    reader.readAsDataURL(file);
+      showFeedback('success', 'Imagem otimizada com sucesso!');
+    } catch (err) {
+      console.error('Erro ao processar imagem:', err);
+      showFeedback('error', 'Erro ao otimizar imagem.');
+    }
   };
   
   // Trip Form State
@@ -1783,7 +1828,7 @@ export default function Admin() {
                             <div style={{ fontSize: '2rem', marginBottom: '6px' }}>📷</div>
                             <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>Clique para escolher ou arraste aqui</span>
                             <br/>
-                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 5MB</span>
+                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 15MB (otimizada automaticamente)</span>
                           </div>
                         )}
                         <input
@@ -2082,7 +2127,7 @@ export default function Admin() {
                             <div style={{ fontSize: '2rem', marginBottom: '6px' }}>📷</div>
                             <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>Clique para escolher ou arraste aqui</span>
                             <br/>
-                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 5MB</span>
+                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 15MB (otimizada automaticamente)</span>
                           </div>
                         )}
                         <input
@@ -2290,7 +2335,7 @@ export default function Admin() {
                             <div style={{ fontSize: '2rem', marginBottom: '6px' }}>📷</div>
                             <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>Clique para escolher ou arraste aqui</span>
                             <br/>
-                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 5MB</span>
+                            <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WebP — máx. 15MB (otimizada automaticamente)</span>
                           </div>
                         )}
                         <input
