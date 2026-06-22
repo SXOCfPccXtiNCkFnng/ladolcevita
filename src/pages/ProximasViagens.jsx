@@ -689,7 +689,9 @@ export default function ProximasViagens() {
         .action-column {
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          justify-content: flex-start;
+          gap: 20px;
+          align-self: start;
           padding: 24px 30px;
           background-color: var(--color-bg-white);
           border-radius: 4px;
