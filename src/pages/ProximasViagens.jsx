@@ -171,8 +171,16 @@ export default function ProximasViagens() {
                 <div className="action-column glass-card">
                   <div className="price-box">
                     <span className="price-label">{t("Valor do Roteiro", "Itinerary Value")}</span>
-                    <span className="price-value">{trip.hidePrice ? t("Consulte o valor", "Contact for price") : t(trip.price)}</span>
-                    {!trip.hidePrice && <span className="price-sub">{t("Por pessoa em quarto duplo", "Per person in double room")}</span>}
+                    {(trip.hidePrice || !trip.price || trip.price.trim() === "") ? (
+                      <span className="price-value" style={{ fontSize: '1.45rem', fontWeight: '600', marginTop: '4px', display: 'block' }}>
+                        {t("Consulte o valor", "Contact for price")}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="price-value">{t(trip.price)}</span>
+                        <span className="price-sub">{t("Por pessoa em quarto duplo", "Per person in double room")}</span>
+                      </>
+                    )}
                   </div>
 
                   {/* Barra de Progresso de Vagas */}
