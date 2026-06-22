@@ -120,6 +120,7 @@ export default function Admin() {
     departure: 'São Paulo/SP',
     date: '',
     price: '',
+    hidePrice: false,
     spotsTotal: 12,
     spotsLeft: 12,
     status: 'Ativo',
@@ -338,6 +339,7 @@ export default function Admin() {
             departure: trip.departure,
             date: trip.date,
             price: trip.price,
+            hidePrice: trip.hidePrice || false,
             spotsTotal: trip.spotsTotal,
             spotsLeft: trip.spotsLeft,
             status: trip.status,
@@ -497,6 +499,7 @@ export default function Admin() {
       departure: 'São Paulo/SP',
       date: '',
       price: '',
+      hidePrice: false,
       spotsTotal: 12,
       spotsLeft: 12,
       status: 'Ativo',
@@ -527,6 +530,7 @@ export default function Admin() {
       departure: trip.departure,
       date: trip.date,
       price: formattedPrice,
+      hidePrice: trip.hidePrice || false,
       spotsTotal: trip.spotsTotal,
       spotsLeft: trip.spotsLeft,
       status: trip.status,
@@ -604,6 +608,7 @@ export default function Admin() {
       departure: tripForm.departure,
       date: tripForm.date,
       price: tripForm.price,
+      hidePrice: tripForm.hidePrice || false,
       spotsTotal: Number(tripForm.spotsTotal),
       spotsLeft: Number(tripForm.spotsLeft),
       status: tripForm.status,
@@ -1327,7 +1332,7 @@ export default function Admin() {
                       </div>
                     ) : (
                       testimonials.map(testimonial => (
-                        <div key={testimonial.docId || testimonial.id} className="admin-trip-row" style={{ gridTemplateColumns: '50px 2fr 1fr 1.5fr' }}>
+                        <div key={testimonial.docId || testimonial.id} className="admin-trip-row admin-testimonial-row">
                           <div className="profile-avatar" style={{ width: '40px', height: '40px', fontSize: '0.9rem' }}>
                             {testimonial.name.substring(0, 2).toUpperCase()}
                           </div>
@@ -1597,16 +1602,13 @@ export default function Admin() {
                 <div className="form-row-two-col">
                   <div className="form-group-custom">
                     <label>País</label>
-                    <select 
+                    <input 
+                      type="text" 
                       value={tripForm.country} 
-                      onChange={e => setTripForm({...tripForm, country: e.target.value})}
-                    >
-                      <option value="Itália">Itália</option>
-                      <option value="Portugal">Portugal</option>
-                      <option value="França">França</option>
-                      <option value="Espanha">Espanha</option>
-                      <option value="Outros">Outros</option>
-                    </select>
+                      onChange={e => setTripForm({...tripForm, country: e.target.value})} 
+                      placeholder="Ex: Itália, Norte da Europa..." 
+                      required 
+                    />
                   </div>
 
                   <div className="form-group-custom">
@@ -1628,9 +1630,29 @@ export default function Admin() {
                       type="text" 
                       value={tripForm.price} 
                       onChange={e => setTripForm({...tripForm, price: formatPrice(e.target.value)})} 
-                      placeholder="R$ 0,00" 
-                      required 
+                      placeholder={tripForm.hidePrice ? "Consulte o valor" : "R$ 0,00"} 
+                      required={!tripForm.hidePrice}
+                      disabled={tripForm.hidePrice}
                     />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                      <input 
+                        type="checkbox" 
+                        id="trip-hide-price"
+                        checked={tripForm.hidePrice || false}
+                        onChange={e => {
+                          const checked = e.target.checked;
+                          setTripForm(prev => ({
+                            ...prev,
+                            hidePrice: checked,
+                            price: checked ? '' : prev.price
+                          }));
+                        }}
+                        style={{ width: '16px', height: '16px', cursor: 'pointer', margin: 0 }}
+                      />
+                      <label htmlFor="trip-hide-price" style={{ margin: 0, cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-dark-green)' }}>
+                        Ocultar preço (Exibir "Consulte o valor")
+                      </label>
+                    </div>
                   </div>
 
                   <div className="form-group-custom">
@@ -1950,16 +1972,13 @@ export default function Admin() {
 
                 <div className="form-group-custom">
                   <label>País</label>
-                  <select 
+                  <input 
+                    type="text" 
                     value={destinationForm.country} 
-                    onChange={e => setDestinationForm({...destinationForm, country: e.target.value})}
-                  >
-                    <option value="Itália">Itália</option>
-                    <option value="Portugal">Portugal</option>
-                    <option value="França">França</option>
-                    <option value="Espanha">Espanha</option>
-                    <option value="Outros">Outros</option>
-                  </select>
+                    onChange={e => setDestinationForm({...destinationForm, country: e.target.value})} 
+                    placeholder="Ex: Itália, Norte da Europa..." 
+                    required 
+                  />
                 </div>
 
                 <div className="form-group-custom">
@@ -2873,6 +2892,10 @@ export default function Admin() {
           margin-top: 12px;
         }
 
+        .admin-testimonial-row {
+          grid-template-columns: 50px 2fr 1fr 1.5fr;
+        }
+
         @media (max-width: 992px) {
           .dashboard-layout {
             grid-template-columns: 1fr;
@@ -2894,8 +2917,30 @@ export default function Admin() {
         }
 
         @media (max-width: 768px) {
+          .dashboard-panel {
+            padding: 20px 16px;
+          }
+
+          .panel-header-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+            text-align: center;
+          }
+
+          .panel-header-row button {
+            width: 100%;
+            justify-content: center;
+          }
+
           .admin-trip-row {
             grid-template-columns: 1fr;
+            text-align: center;
+            gap: 12px;
+          }
+
+          .admin-testimonial-row {
+            grid-template-columns: 1fr !important;
             text-align: center;
             gap: 12px;
           }

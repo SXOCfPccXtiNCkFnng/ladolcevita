@@ -10,27 +10,17 @@ import { useSettings } from '../context/SettingsContext';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Destinos() {
-  const [selectedFilter, setSelectedFilter] = useState('Todos');
   const [activeDestination, setActiveDestination] = useState(null);
 
   const { destinations, loading: destinationsLoading } = useDestinations();
   const { settings } = useSettings();
   const { t } = useLanguage();
 
-  // Gera os países únicos dinamicamente a partir dos destinos disponíveis
-  const uniqueCountries = [...new Set(destinations.map(d => d.country))].sort();
-
-  // Separa países conhecidos de 'Outros'
-  const knownCountries = ['Itália', 'Portugal', 'França', 'Espanha'];
-  const mainCountries = uniqueCountries.filter(c => knownCountries.includes(c));
-  const hasOthers = uniqueCountries.some(c => !knownCountries.includes(c));
-
-  // Filtragem dos roteiros com base no pill selecionado
-  const filteredDestinations = destinations.filter(dest => {
-    if (selectedFilter === 'Todos') return true;
-    if (selectedFilter === 'Outros') return !knownCountries.includes(dest.country);
-    return dest.country === selectedFilter;
-  });
+  const isCountryRedundant = (country, title) => {
+    if (!country || !title) return false;
+    const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    return norm(country) === norm(title);
+  };
 
   const openWhatsApp = (destinationName = null) => {
     let text = t(
@@ -63,40 +53,7 @@ export default function Destinos() {
         </div>
       </section>
 
-      {/* 2. FILTROS POR PILLS - Gerados dinamicamente a partir dos países existentes */}
-      <div className="container filter-pills-container">
-        <div className="filter-pills-row">
-          <button 
-            className={`filter-pill-btn ${selectedFilter === 'Todos' ? 'active' : ''}`}
-            onClick={() => setSelectedFilter('Todos')}
-          >
-            {t("Todos os destinos", "All destinations")}
-          </button>
-
-          {/* Pills gerados dinamicamente para cada país com viagens */}
-          {mainCountries.map(country => (
-            <button 
-              key={country}
-              className={`filter-pill-btn ${selectedFilter === country ? 'active' : ''}`}
-              onClick={() => setSelectedFilter(country)}
-            >
-              {t(country)}
-            </button>
-          ))}
-
-          {/* Pill "Outros" só aparece se houver países fora da lista principal */}
-          {hasOthers && (
-            <button 
-              className={`filter-pill-btn ${selectedFilter === 'Outros' ? 'active' : ''}`}
-              onClick={() => setSelectedFilter('Outros')}
-            >
-              {t("Outros", "Others")}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* 3. GRID DE DESTINOS */}
+      {/* 2. GRID DE DESTINOS */}
       <div className="container destinations-cards-section">
         {destinationsLoading ? (
           <div className="no-results text-center" style={{ padding: '60px 0' }}>
@@ -104,17 +61,12 @@ export default function Destinos() {
             <p style={{ fontFamily: 'var(--font-title)', fontSize: '1.1rem', color: 'var(--color-dark-green)' }}>{t("Carregando destinos...", "Loading destinations...")}</p>
             <style>{`@keyframes spin-filter { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }`}</style>
           </div>
-        ) : filteredDestinations.length === 0 ? (
+        ) : destinations.length === 0 ? (
           <div className="no-results text-center">
             <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.8rem', color: 'var(--color-dark-green)', marginBottom: '12px' }}>
-              {selectedFilter === 'Todos' ? t('Nenhum destino disponível no momento', 'No destinations available at the moment') : t(`Nenhum destino em ${selectedFilter} no momento`, `No destinations in ${t(selectedFilter)} at the moment`)}
+              {t('Nenhum destino disponível no momento', 'No destinations available at the moment')}
             </h3>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>{t("Em breve adicionaremos novos destinos incríveis aqui.", "We will add new amazing destinations here soon.")}</p>
-            {selectedFilter !== 'Todos' && (
-              <button className="filter-pill-btn active" onClick={() => setSelectedFilter('Todos')} style={{ margin: '0 auto' }}>
-                {t("Ver todos os destinos", "View all destinations")}
-              </button>
-            )}
           </div>
         ) : (
           <div className="destinations-grid">
@@ -124,7 +76,7 @@ export default function Destinos() {
                 to   { opacity: 1; transform: translateY(0); }
               }
             `}</style>
-            {filteredDestinations.map((dest, idx) => {
+            {destinations.map((dest, idx) => {
               return (
                 <div
                   key={dest.docId || dest.id}
@@ -139,7 +91,9 @@ export default function Destinos() {
                     <img src={dest.image} alt={t(dest.title)} className="card-image" />
                   </div>
                   <div className="card-content">
-                    <span className="card-country">{t(dest.country)}</span>
+                    {!isCountryRedundant(dest.country, dest.title) && (
+                      <span className="card-country">{t(dest.country)}</span>
+                    )}
                     <h3 className="card-title">{t(dest.title)}</h3>
                     <p className="card-desc">{t(dest.description)}</p>
                     
@@ -231,7 +185,9 @@ export default function Destinos() {
               {/* Imagem Superior */}
               <div className="modal-header-image" style={{ backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.75)), url(${activeDestination.image})` }}>
                 <div className="modal-header-text">
-                  <span className="modal-badge-country">{t(activeDestination.country)}</span>
+                  {!isCountryRedundant(activeDestination.country, activeDestination.title) && (
+                    <span className="modal-badge-country">{t(activeDestination.country)}</span>
+                  )}
                   <h2>{t(activeDestination.title)}</h2>
                   <div className="modal-quick-meta" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     {activeDestination.tags && activeDestination.tags.map((tag, i) => (

@@ -10,6 +10,12 @@ import { useLanguage } from '../context/LanguageContext';
 export default function ProximasViagens() {
   const { settings } = useSettings();
   const { t, language } = useLanguage();
+
+  const isCountryRedundant = (country, title) => {
+    if (!country || !title) return false;
+    const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    return norm(country) === norm(title);
+  };
   
   const monthOrder = {
     "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4, "Maio": 5, "Junho": 6,
@@ -135,7 +141,9 @@ export default function ProximasViagens() {
                   </div>
                   
                   <div className="trip-details-content">
-                    <span className="trip-country-tag">{t(trip.country)}</span>
+                    {!isCountryRedundant(trip.country, trip.title) && (
+                      <span className="trip-country-tag">{t(trip.country)}</span>
+                    )}
                     <h3>{t(trip.title)}</h3>
                     <p className="trip-summary-desc">{t(trip.description)}</p>
                     
@@ -163,8 +171,8 @@ export default function ProximasViagens() {
                 <div className="action-column glass-card">
                   <div className="price-box">
                     <span className="price-label">{t("Valor do Roteiro", "Itinerary Value")}</span>
-                    <span className="price-value">{t(trip.price)}</span>
-                    <span className="price-sub">{t("Por pessoa em quarto duplo", "Per person in double room")}</span>
+                    <span className="price-value">{trip.hidePrice ? t("Consulte o valor", "Contact for price") : t(trip.price)}</span>
+                    {!trip.hidePrice && <span className="price-sub">{t("Por pessoa em quarto duplo", "Per person in double room")}</span>}
                   </div>
 
                   {/* Barra de Progresso de Vagas */}

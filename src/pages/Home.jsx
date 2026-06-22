@@ -24,6 +24,12 @@ export default function Home({ setCurrentTab }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
+  const isCountryRedundant = (country, title) => {
+    if (!country || !title) return false;
+    const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    return norm(country) === norm(title);
+  };
+
   // Controle de arrastar com o dedo (Swipe) no Mobile
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
@@ -257,7 +263,9 @@ export default function Home({ setCurrentTab }) {
                     <img src={dest.image} alt={t(dest.title)} className="card-image" />
                   </div>
                   <div className="card-content">
-                    <span className="card-country">{t(dest.country)}</span>
+                    {!isCountryRedundant(dest.country, dest.title) && (
+                      <span className="card-country">{t(dest.country)}</span>
+                    )}
                     <h3 className="card-title">{t(dest.title)}</h3>
                     <p className="card-desc">{t(dest.description)}</p>
 
