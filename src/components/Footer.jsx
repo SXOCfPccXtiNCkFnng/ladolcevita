@@ -84,7 +84,7 @@ export default function Footer({ currentTab, setCurrentTab }) {
             className="copyright" 
             onClick={handleCopyrightClick}
           >
-            © {new Date().getFullYear()} La Dolce Vita. {t('footer.copyright')} | {t('footer.developer')} <a href="https://domutech.digital/" target="_blank" rel="noopener noreferrer" className="credit-link">Alan Felipe</a>
+            © {new Date().getFullYear()} La Dolce Vita. {t('footer.copyright')} | {t('footer.developer')} <a href="https://domutech.digital/" target="_blank" rel="noopener noreferrer" className="credit-link">Domu Tech</a>
           </span>
         </div>
       </div>

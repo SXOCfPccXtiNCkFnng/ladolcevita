@@ -49,18 +49,41 @@ export default function SobreNos() {
       {/* 2. CONTEÚDO (Story Intro Split) */}
       <section className="container hero-split-section reveal" style={{ marginTop: '50px' }}>
         <div className="hero-split-left">
-          <h2 className="hero-tagline">{t("Somos apaixonados por viagens e por criar experiências que transformam.", "We are passionate about travel and creating experiences that transform.")}</h2>
+          <h2 className="hero-tagline">{t("Foco em Experiência e Transformação", "Focus on Experience and Transformation")}</h2>
           
           <p className="hero-desc">
             {t(
-              "Acreditamos que cada viagem é única e deve refletir os sonhos e o estilo de cada viajante. Por isso, cuidamos de cada detalhe para que você viva momentos inesquecíveis com segurança e tranquilidade.",
-              "We believe that each trip is unique and should reflect the dreams and style of each traveler. Therefore, we take care of every detail so that you live unforgettable moments with safety and peace of mind."
+              "O mundo é grande demais para roteiros comuns. Viva viagens autênticas e sob medida. Transformamos a logística de uma viagem e tempo perdido em dias perfeitos de descanso e descoberta. Planejamos cada rota para que a sua única preocupação seja colecionar memórias.",
+              "The world is too big for ordinary itineraries. Live authentic and tailor-made journeys. We transform travel logistics and lost time into perfect days of rest and discovery. We plan every route so that your only concern is to collect memories."
+            )}
+          </p>
+          <p className="hero-desc" style={{ marginTop: '15px' }}>
+            {t(
+              "Mais que passagens, oferecemos conexões reais e momentos inesquecíveis. Sua viagem começa agora. Esqueça o estresse e deixe a organização minuciosa com a gente.",
+              "More than tickets, we offer real connections and unforgettable moments. Your trip starts now. Forget the stress and leave the meticulous organization to us."
             )}
           </p>
         </div>
         
         <div className="hero-split-right">
           <img src={toscanaStreetVertical} alt={t("Rua medieval na Toscana", "Medieval street in Tuscany")} className="hero-vertical-img" />
+        </div>
+      </section>
+
+      {/* Seção da Frase Mágica Dedicada */}
+      <section className="sobre-nos-magic-quote reveal">
+        <div className="container text-center quote-container">
+          <p className="magic-quote-text">
+            {t(
+              "Descrições mágicas de viagem são aquelas que capturam a transformação e o encantamento de explorar o mundo. Elas ajudam a eternizar momentos únicos e traduzem o fascínio de descobrir o desconhecido.",
+              "Magical travel descriptions are those that capture the transformation and enchantment of exploring the world. They help eternalize unique moments and translate the fascination of discovering the unknown."
+            )}
+          </p>
+          <div className="gold-diamond-divider center-align">
+            <div className="divider-line"></div>
+            <div className="divider-diamond">♦</div>
+            <div className="divider-line"></div>
+          </div>
         </div>
       </section>
 
@@ -75,8 +98,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>{t("Atendimento personalizado", "Personalized service")}</strong>
-              <p>{t("Cuidamos de cada detalhe da sua viagem do início ao fim.", "We take care of every detail of your trip from start to finish.")}</p>
+              <strong>{t("Logística Otimizada", "Optimized Logistics")}</strong>
+              <p>{t("Nós cuidamos de todos os detalhes, do check-in ao check-out. Você só precisa aproveitar.", "We take care of every detail, from check-in to check-out. You just need to enjoy.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -88,8 +111,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>{t("Experiências autênticas", "Authentic experiences")}</strong>
-              <p>{t("Vivencie o destino de forma única e verdadeira.", "Experience the destination in a unique and true way.")}</p>
+              <strong>{t("Roteiros Sob Medida", "Tailored Itineraries")}</strong>
+              <p>{t("Planejamos cada rota para que a sua única preocupação seja colecionar memórias.", "We plan every route so that your only concern is collecting memories.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -99,8 +122,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>{t("Parcerias de confiança", "Trusted partnerships")}</strong>
-              <p>{t("Trabalhamos com os melhores fornecedores locais.", "We work with the best local suppliers.")}</p>
+              <strong>{t("Experiências Reais", "Real Experiences")}</strong>
+              <p>{t("Mais que passagens, oferecemos conexões reais e momentos inesquecíveis.", "More than tickets, we offer real connections and unforgettable moments.")}</p>
             </div>
           </div>
           <div className="usp-bar-item">
@@ -111,8 +134,8 @@ export default function SobreNos() {
               </svg>
             </div>
             <div>
-              <strong>{t("Suporte completo", "Complete support")}</strong>
-              <p>{t("Estamos com você antes, durante e depois da viagem.", "We are with you before, during, and after the trip.")}</p>
+              <strong>{t("Suporte & Cuidado", "Support & Care")}</strong>
+              <p>{t("Seu único trabalho é viver o momento; de cada detalhe, cuidamos nós nos bastidores.", "Your only job is to live the moment; we take care of every detail behind the scenes.")}</p>
             </div>
           </div>
         </div>
@@ -132,15 +155,15 @@ export default function SobreNos() {
           
           <p className="editorial-p">
             {t(
-              "A La Dolce Vita nasceu do desejo de compartilhar o que há de mais belo no mundo: lugares, culturas, sabores e histórias que ficam para sempre na memória.",
-              "La Dolce Vita was born from the desire to share what is most beautiful in the world: places, cultures, flavors, and stories that stay in memory forever."
+              "Transformamos a logística de uma viagem em uma experiência mágica e sem preocupações. Criamos memórias inesquecíveis enquanto cuidamos minuciosamente de cada detalhe nos bastidores.",
+              "We transform the logistics of a trip into a magical and worry-free experience. We create unforgettable memories while meticulously taking care of every detail behind the scenes."
             )}
           </p>
           
           <p className="editorial-p">
             {t(
-              "Mais do que roteiros, entregamos vivências. Planejamos cada viagem com carinho, atenção e conhecimento para que você aproveite o melhor de cada destino com tranquilidade.",
-              "More than itineraries, we deliver experiences. We plan each trip with care, attention, and knowledge so that you can enjoy the best of each destination in peace."
+              "A La Dolce Vita nasceu do desejo de compartilhar o que há de mais autêntico e encantador no mundo: vilarejos medievais, culturas ricas, gastronomia tradicional e histórias que ficam para sempre na memória.",
+              "La Dolce Vita was born from the desire to share what is most authentic and charming in the world: medieval villages, rich cultures, traditional gastronomy, and stories that stay in memory forever."
             )}
           </p>
 
@@ -199,6 +222,97 @@ export default function SobreNos() {
         </div>
       </section>
 
+      {/* 5. METODOLOGIA E DETALHES DE PLANEJAMENTO */}
+      <section className="sobre-nos-detalhes-section reveal">
+        <div className="container">
+          <div className="detalhes-grid">
+            
+            {/* Coluna 1: Como desenhar a sua viagem ideal */}
+            <div className="detalhes-col glass-card">
+              <span className="detalhes-tag">{t("PASSO A PASSO", "STEP BY STEP")}</span>
+              <h3 className="detalhes-title">{t("Como desenhar a sua viagem ideal", "How to design your ideal trip")}</h3>
+              <p className="detalhes-subtitle">
+                {t(
+                  "Com a vivência e o mapeamento de rotas, a construção da sua jornada envolve:",
+                  "With experience and route mapping, building your journey involves:"
+                )}
+              </p>
+              <div className="gold-diamond-divider">
+                <div className="divider-line"></div>
+                <div className="divider-diamond">♦</div>
+                <div className="divider-line"></div>
+              </div>
+              
+              <ul className="detalhes-list">
+                <li>
+                  <strong>{t("Imersão cultural:", "Cultural immersion:")}</strong>{' '}
+                  {t(
+                    "Acesso a vilarejos históricos que passam despercebidos pelo turismo de massa, como os encontrados na região da Toscana ou da Úmbria.",
+                    "Access to historic villages that go unnoticed by mass tourism, such as those found in the Tuscany or Umbria regions."
+                  )}
+                </li>
+                <li>
+                  <strong>{t("Logística otimizada:", "Optimized logistics:")}</strong>{' '}
+                  {t(
+                    "Conhecimento exato das distâncias e dos melhores meios de transporte (trens regionais, rotas panorâmicas de carro ou voos internos) entre grandes centros, como Milão, Roma e Florença.",
+                    "Exact knowledge of distances and the best means of transportation (regional trains, scenic driving routes, or domestic flights) between major centers, such as Milan, Rome, and Florence."
+                  )}
+                </li>
+                <li>
+                  <strong>{t("Experiências personalizadas:", "Personalized experiences:")}</strong>{' '}
+                  {t(
+                    "Inclusão de vivências autênticas, desde degustações em vinícolas de pequenos produtores locais até hospedagens em locais de charme ou históricos.",
+                    "Inclusion of authentic experiences, from tastings in wineries of small local producers to stays in charming or historic accommodations."
+                  )}
+                </li>
+              </ul>
+            </div>
+
+            {/* Coluna 2: Planejamento no detalhe */}
+            <div className="detalhes-col glass-card">
+              <span className="detalhes-tag">{t("NOSSO DIFERENCIAL", "OUR DIFFERENTIAL")}</span>
+              <h3 className="detalhes-title">{t("Planejamento no detalhe", "Planning in detail")}</h3>
+              <p className="detalhes-subtitle">
+                {t(
+                  "Uma viagem desenhada por quem domina o território local conta com:",
+                  "A trip designed by those who master the local territory features:"
+                )}
+              </p>
+              <div className="gold-diamond-divider">
+                <div className="divider-line"></div>
+                <div className="divider-diamond">♦</div>
+                <div className="divider-line"></div>
+              </div>
+              
+              <ul className="detalhes-list">
+                <li>
+                  <strong>{t("Sugestões de épocas ideais:", "Ideal season suggestions:")}</strong>{' '}
+                  {t(
+                    "Variações climáticas e de lotação ao longo do ano para evitar multidões e aproveitar o melhor do clima.",
+                    "Weather and crowd variations throughout the year to avoid crowds and enjoy the best of the weather."
+                  )}
+                </li>
+                <li>
+                  <strong>{t("Seleção de hospedagem:", "Accommodation selection:")}</strong>{' '}
+                  {t(
+                    "Indicação de hotéis, agriturismos ou bed & breakfasts testados e aprovados.",
+                    "Recommendation of hotels, agriturismos, or bed & breakfasts tested and approved."
+                  )}
+                </li>
+                <li>
+                  <strong>{t("Gastronomia raiz:", "Root gastronomy:")}</strong>{' '}
+                  {t(
+                    "Roteiros gastronômicos detalhados com base na especialidade de cada província ou região italiana.",
+                    "Detailed gastronomic itineraries based on the specialty of each Italian province or region."
+                  )}
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* 5. QUEM ESTÁ POR TRÁS */}
       <section className="quem-somos-section reveal">
         <div className="container text-center">
@@ -245,13 +359,13 @@ export default function SobreNos() {
             <div className="founder-quote-text">
               <blockquote className="founder-quote">
                 "{t(
-                  "Nosso compromisso é desenhar roteiros que fujam do óbvio. Queremos que você se sinta um convidado especial na Europa, seja degustando um vinho raro com o próprio produtor na Toscana ou navegando em um barco privativo no Lago de Como.",
-                  "Our commitment is to design itineraries that escape the obvious. We want you to feel like a special guest in Europe, whether tasting a rare wine with the producer in Tuscany or sailing a private boat on Lake Como."
+                  "Planejar uma viagem autêntica exige vivência real. Com anos de experiência no território italiano, crio roteiros sob medida, focando na sua essência, cultura local, história e gastronomia. Evite rotas turísticas engessadas e aproveite a Itália fora do óbvio.",
+                  "Planning an authentic trip requires real experience. With years of experience in Italian territory, I create custom itineraries focusing on your essence, local culture, history, and gastronomy. Avoid rigid tourist routes and enjoy Italy off the beaten path."
                 )}"
               </blockquote>
               <cite className="founder-cite">
                 <strong>La Dolce Vita</strong>
-                <span>{t("Curadores de Roteiros", "Itinerary Curators")}</span>
+                <span>{t("Fundador & Curador de Viagens", "Founder & Travel Curator")}</span>
               </cite>
             </div>
           </div>
@@ -738,6 +852,130 @@ export default function SobreNos() {
           border-top: 1px solid var(--color-primary-gold-light);
           border-bottom: 1px solid var(--color-primary-gold-light);
           margin-top: 80px;
+        }
+
+        /* ESTILOS DA SEÇÃO DA FRASE MÁGICA DEDICADA */
+        .sobre-nos-magic-quote {
+          padding: 80px 0 40px 0;
+          background-color: var(--color-bg-light);
+        }
+        .sobre-nos-magic-quote .quote-container {
+          max-width: 800px;
+          margin: 0 auto;
+          position: relative;
+        }
+
+        .magic-quote-text {
+          font-family: var(--font-title);
+          font-size: 1.8rem;
+          line-height: 1.65;
+          color: var(--color-dark-green-dark);
+          font-style: italic;
+          margin-bottom: 30px;
+          text-align: left;
+          position: relative;
+          padding-left: 55px;
+        }
+
+        .magic-quote-text::before {
+          content: "“";
+          font-family: var(--font-title);
+          font-size: 6rem;
+          color: var(--color-primary-gold-light);
+          line-height: 1;
+          position: absolute;
+          left: 0;
+          top: -20px;
+          opacity: 0.85;
+        }
+
+        @media (max-width: 768px) {
+          .magic-quote-text {
+            padding-left: 40px;
+            font-size: 1.45rem;
+          }
+          .magic-quote-text::before {
+            font-size: 4.5rem;
+            top: -15px;
+          }
+        }
+
+        /* ESTILOS DA SEÇÃO DE METODOLOGIA / DETALHES */
+        .sobre-nos-detalhes-section {
+          padding: 80px 0;
+          background-color: var(--color-bg-light);
+        }
+        .detalhes-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+        }
+        .detalhes-col {
+          padding: 40px;
+          border-radius: var(--border-radius-md);
+          border: 1px solid var(--color-primary-gold-light);
+          background: #FFFFFF;
+          box-shadow: var(--shadow-small);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+        .detalhes-tag {
+          font-family: var(--font-body);
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--color-primary-gold-dark);
+          letter-spacing: 0.15em;
+          margin-bottom: 8px;
+          display: block;
+        }
+        .detalhes-title {
+          font-family: var(--font-title);
+          font-size: 2.2rem;
+          color: var(--color-dark-green);
+          font-weight: 400;
+          margin-bottom: 12px;
+          line-height: 1.2;
+        }
+        .detalhes-subtitle {
+          font-size: 1rem;
+          color: var(--color-text-muted);
+          line-height: 1.5;
+          margin-bottom: 8px;
+        }
+        .detalhes-list {
+          list-style: none;
+          padding: 0;
+          margin: 20px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .detalhes-list li {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: var(--color-text-muted);
+          position: relative;
+          padding-left: 20px;
+        }
+        .detalhes-list li::before {
+          content: "•";
+          color: var(--color-primary-gold);
+          font-weight: bold;
+          font-size: 1.25rem;
+          position: absolute;
+          left: 0;
+          top: -2px;
+        }
+        .detalhes-list li strong {
+          color: var(--color-dark-green-dark);
+          font-weight: 700;
+        }
+        @media (max-width: 992px) {
+          .detalhes-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+          }
         }
       `}</style>
     </div>
