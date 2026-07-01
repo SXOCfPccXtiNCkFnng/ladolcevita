@@ -468,6 +468,9 @@ export default function Contato() {
             padding-top: calc(var(--header-height) + 20px);
             padding-bottom: 80px;
           }
+          .hero-divider-curve {
+            height: 30px;
+          }
           .hero-title {
             font-size: 2.8rem;
           }

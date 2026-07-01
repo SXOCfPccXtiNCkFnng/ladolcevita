@@ -618,6 +618,14 @@ export default function Home({ setCurrentTab }) {
           .hero-ctas-premium {
             justify-content: flex-start;
           }
+
+          .hero-divider-curve {
+            height: 30px;
+          }
+
+          .slide-indicators-premium {
+            display: none;
+          }
         }
 
         /* USP Section */

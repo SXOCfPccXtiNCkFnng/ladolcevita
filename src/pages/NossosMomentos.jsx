@@ -715,6 +715,9 @@ export default function NossosMomentos() {
           .momentos-hero {
             height: 380px;
           }
+          .hero-divider-curve {
+            height: 30px;
+          }
           .momentos-hero-content h1 {
             font-size: 2.8rem;
           }

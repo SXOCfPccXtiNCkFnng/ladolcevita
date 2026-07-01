@@ -815,6 +815,10 @@ export default function SobreNos() {
             padding-top: var(--header-height);
           }
 
+          .hero-divider-curve {
+            height: 30px;
+          }
+
           .sobre-nos-hero-content h1 {
             font-size: 2.8rem;
           }

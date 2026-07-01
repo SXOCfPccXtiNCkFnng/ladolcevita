@@ -1195,6 +1195,9 @@ export default function ProximasViagens() {
           .viagens-hero {
             height: 380px;
           }
+          .hero-divider-curve {
+            height: 30px;
+          }
           .viagens-hero-content h1 {
             font-size: 2.8rem;
           }
